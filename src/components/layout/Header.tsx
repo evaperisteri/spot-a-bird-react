@@ -1,9 +1,16 @@
 import { FaHiking } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Header() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { isAuthenticated, logoutUser, username } = context;
   return (
     <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 ">
       <nav className="mx-auto flex flex-col md:flex-row justify-between items-center max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -23,14 +30,15 @@ export default function Header() {
         {isAuthenticated && (
           <div className="flex items-center">
             <Link
-              to="./user-profile.html"
+              to="./user-profile"
               className="decoration-none font-semibold tracking-wider underline text-purple hover:text-purple/80 transition"
             >
-              Eva Peristeri
+              {username ?? "Profile"}
             </Link>
             <div className="flex items-center gap-4 group relative">
               <button
                 type="button"
+                onClick={logoutUser}
                 className="bg-lilac text-purple m-2 rounded shadow-heavy hover:bg-lilac/80 transition"
               >
                 <FaHiking className="m-2 h-8 w-8" />

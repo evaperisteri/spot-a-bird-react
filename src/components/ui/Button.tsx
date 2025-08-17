@@ -4,6 +4,7 @@ type ButtonProps = {
   to?: string;
   children: React.ReactNode;
   className?: string;
+  type: string;
 };
 
 export const Button = ({ to, children, className = "" }: ButtonProps) => {

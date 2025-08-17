@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button } from "../components/Button.tsx";
+import { Button } from "../components/ui/Button.tsx";
 
 const HomePage = () => {
   useEffect(() => {
@@ -14,7 +14,9 @@ const HomePage = () => {
       <p className="text-lg md:text-xl text-sage font-sans mb-8 max-w-3xl mx-auto">
         Spot and log bird sightings in Greece.
       </p>
-      <Button to="/login">Let's go...</Button>
+      <Button to="/login" type="button">
+        Let's go...
+      </Button>
     </div>
   );
 };
