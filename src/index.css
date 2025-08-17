@@ -1,8 +1,5 @@
 @import "tailwindcss";
-@import "tailwindcss/preflight";
-/* @import "tailwindcss/utilities"; */
 
-/* Fonts */
 @font-face {
   font-family: "ArchitectsDaughter";
   src: url("/fonts/ArchitectsDaughter-Regular.ttf");
@@ -29,5 +26,14 @@
   --font-sans: Montserrat, "sans-serif";
   --font-serif: Cormorant, "serif";
 
-  --shadow-soft: 0 14px 24px 0 rgb(var(--color-purple) / 0.15);
+  /* --shadow-soft: 0 14px 24px 0 rgb(var(--color-purple) / 0.15);
+  --shadow-heavy: 0 20px 25px -5px rgb(var(--color-purple) / 0.25);
+  --shadow-float: 0 25px 50px -12px rgb(var(--color-purple) / 0.3);
+  --shadow-edge: 8px 8px 0 0 rgb(var(--color-purple) / 0.95);
+  --shadow-hover: 0 30px 60px -15px rgb(var(--color-purple) / 0.4); */
+  --shadow-soft: 0 14px 24px 0 rgba(90, 64, 96, 0.15);
+  --shadow-heavy: 0 20px 25px -5px rgba(90, 64, 96, 0.25);
+  --shadow-float: 0 25px 50px -12px rgba(90, 64, 96, 0.3);
+  --shadow-edge: 14px 14px 24px 24px rgba(90, 64, 96, 0.15);
+  --shadow-hover: 0 30px 60px -15px rgba(90, 64, 96, 0.4);
 }

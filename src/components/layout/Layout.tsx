@@ -4,9 +4,11 @@ import Footer from "./Footer";
 
 export default function Layout() {
   return (
-    <div className="bg-[url('/images/ssspot.svg')] bg-cover bg-center bg-white/80 h-screen">
-      <Header />
-      <div className="mt-4 mx-auto w-full max-w-7xl sm:px-6 lg:px-8">
+    <div className="bg-[url('/images/ssspot.svg')] bg-cover bg-center h-screen">
+      <div className="bg-offwhite/70">
+        <Header />
+      </div>
+      <div>
         <Outlet />
       </div>
       <Footer />
