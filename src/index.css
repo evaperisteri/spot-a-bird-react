@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+@font-face {
+  font-family: ArchitectsDaughter;
+  src: url("../src/assets/fonts/ArchitectsDaughter-Regular.ttf");
+}
+
+@font-face {
+  font-family: Montserrat;
+  src: url("../src/assets/fonts/Montserrat-Regular.ttf");
+}
+
+@font-face {
+  font-family: Cormorant;
+  src: url("../src/assets/fonts/Cormorant-Regular.ttf");
+}
+
+@theme {
+  --color-lilac: #d9c7dd; /* 217 199 221 */
+  --color-purple: #5a4060; /* 90 64 96 */
+  --color-eggshell: #d4ab86; /* 212 171 134 */
+  --color-sage: #608268; /* 96 130 104 */
+  --color-offwhite: #fdfced; /* 253 252 237 */
+
+  --font-logo: ArchitectsDaughter, "sans-serif";
+  --font-sans: Montserrat, "sans-serif";
+  --font-serif: Cormorant, "serif";
+
+  --shadow-soft: 0 14px 24px 0 rgb(var(--color-purple) / 0.15);
+}
