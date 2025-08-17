@@ -1,20 +1,21 @@
 @import "tailwindcss";
 @import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+/* @import "tailwindcss/utilities"; */
 
+/* Fonts */
 @font-face {
-  font-family: ArchitectsDaughter;
-  src: url("../src/assets/fonts/ArchitectsDaughter-Regular.ttf");
+  font-family: "ArchitectsDaughter";
+  src: url("/fonts/ArchitectsDaughter-Regular.ttf");
 }
 
 @font-face {
-  font-family: Montserrat;
-  src: url("../src/assets/fonts/Montserrat-Regular.ttf");
+  font-family: "Montserrat";
+  src: url("/fonts/Montserrat-Regular.ttf");
 }
 
 @font-face {
-  font-family: Cormorant;
-  src: url("../src/assets/fonts/Cormorant-Regular.ttf");
+  font-family: "Cormorant";
+  src: url("/fonts/Cormorant-Regular.ttf");
 }
 
 @theme {
