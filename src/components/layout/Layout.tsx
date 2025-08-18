@@ -8,10 +8,10 @@ export default function Layout() {
       <div className="bg-offwhite/70 h-20">
         <Header />
       </div>
-      <div className="flex-1">
+      <div className="h-75 flex-auto">
         <Outlet />
       </div>
-      <div className="h-12">
+      <div className="h-6">
         <Footer />
       </div>
     </div>

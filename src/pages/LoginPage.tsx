@@ -33,58 +33,60 @@ export default function LoginPage() {
 
   return (
     <>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="max-w-sm mx-auto p-8 space-y-4 border-2 border-eggshell/30 rounded bg-offwhite/80 my-12"
-      >
-        <h1 className="text-purple text-xl">Already a spotter?</h1>
-        <div>
-          <Label htmlFor="username" className="mb-1">
-            Username
-          </Label>
-          <Input
-            id="username"
-            autoFocus
-            {...register("username")}
-            disabled={isSubmitting}
-          />
-          {errors.username && (
-            <div className="text-cf-dark-red">{errors.username.message}</div>
-          )}
-        </div>
-
-        <div>
-          <Label htmlFor="password" className="mb-1">
-            Password
-          </Label>
-          <Input
-            id="password"
-            type="password"
-            autoFocus
-            {...register("password")}
-            disabled={isSubmitting}
-          />
-          {errors.password && (
-            <div className="text-cf-dark-red">{errors.password.message}</div>
-          )}
-        </div>
-
-        <Button
-          type="submit"
-          {...({
-            disabled: isSubmitting,
-          } as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      <div className="items-center justify-center bg-offwhite/80 sm:px-6 lg:px-8">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="max-w-sm mx-auto p-8 space-y-4 border-2 border-eggshell/30 rounded bg-offwhite/80 my-12"
         >
-          {isSubmitting ? "Logging ..." : "Login"}
-        </Button>
-        <p className="text-center">OR</p>
-        <Link
-          className="text-purple font-sans hover:text-purple/70"
-          to="/register"
-        >
-          Register here
-        </Link>
-      </form>
+          <h1 className="text-purple text-xl">Already a spotter?</h1>
+          <div>
+            <Label htmlFor="username" className="mb-1">
+              Username
+            </Label>
+            <Input
+              id="username"
+              autoFocus
+              {...register("username")}
+              disabled={isSubmitting}
+            />
+            {errors.username && (
+              <div className="text-cf-dark-red">{errors.username.message}</div>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="password" className="mb-1">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              autoFocus
+              {...register("password")}
+              disabled={isSubmitting}
+            />
+            {errors.password && (
+              <div className="text-cf-dark-red">{errors.password.message}</div>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            {...({
+              disabled: isSubmitting,
+            } as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+          >
+            {isSubmitting ? "Logging ..." : "Login"}
+          </Button>
+          <p className="text-center">OR</p>
+          <Link
+            className="text-purple font-sans hover:text-purple/70"
+            to="/register"
+          >
+            Register here
+          </Link>
+        </form>
+      </div>
     </>
   );
 }
