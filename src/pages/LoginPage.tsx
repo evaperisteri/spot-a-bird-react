@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type LoginFields, loginSchema } from "../api/login.ts";
 import { Input } from "../components/ui/input.tsx";
-import { Button } from "../components/ui/Button.tsx";
+import { Button } from "../components/ui/button.tsx";
 import { Label } from "../components/ui/label.tsx";
 import { useAuth } from "../hooks/useAuth.ts";
 import { toast } from "sonner";
