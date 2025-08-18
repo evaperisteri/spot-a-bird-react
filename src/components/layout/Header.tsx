@@ -12,7 +12,7 @@ export default function Header() {
 
   const { isAuthenticated, logoutUser, username } = context;
   return (
-    <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 ">
+    <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-20">
       <nav className="mx-auto flex flex-col md:flex-row justify-between items-center max-w-7xl px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
