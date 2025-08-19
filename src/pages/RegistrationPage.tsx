@@ -19,6 +19,7 @@ export default function RegistrationPage() {
   });
 
   const onSubmit = async (data: RegisterFields) => {
+    console.log("Form submitted with data:", data);
     const payload = {
       ...data,
       isActive: true,
@@ -28,7 +29,8 @@ export default function RegistrationPage() {
       },
     };
     try {
-      const res = await fetch("api/users/save", {
+      console.log("Sending registration request", payload);
+      const res = await fetch("/api/users/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

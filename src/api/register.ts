@@ -7,7 +7,6 @@ export const registerSchema = z.object({
   lastname: z.string().min(1),
   email: z.string().email(),
   role: z.enum(["ADMIN", "SPOTTER"]),
-  isActive: z.boolean(),
   dateOfBirth: z.string().min(1),
   gender: z.enum(["MALE", "FEMALE", "NON-BINARY", "GENDERFLUID", "OTHER"]),
 });

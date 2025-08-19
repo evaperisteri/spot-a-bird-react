@@ -13,7 +13,7 @@ export default function Header() {
   const { isAuthenticated, logoutUser, username } = context;
   return (
     <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-20">
-      <nav className="flex flex-col md:flex-row justify-between items-center max-w-7xl sm:px-6 lg:px-8">
+      <nav className="flex flex-col md:flex-row justify-between max-w-7xl sm:px-6 lg:px-8">
         <Link
           to="/"
           className="flex items-center gap-4 hover:opacity-80 transition-opacity duration-200"

@@ -18,7 +18,7 @@ const HomePage = () => {
         Spot and log bird sightings in Greece.
       </p>
       <div className="text-center mx-auto">
-        <ButtonHome to="/auth/login" type="button">
+        <ButtonHome to="/login" type="button">
           Let's go...
         </ButtonHome>
       </div>

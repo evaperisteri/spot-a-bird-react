@@ -24,8 +24,8 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFields) => {
     try {
       await loginUser(data);
-      toast.success("Login successfull!");
-      navigate("/products");
+      toast.success("Login successful!");
+      navigate("/dashboard");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed...");
     }
@@ -85,7 +85,7 @@ export default function LoginPage() {
           <p className="text-center">OR</p>
           <Link
             className="text-purple font-sans hover:text-purple/70 border border-purple hover:border-eggshell rounded-md p-2 shadow-soft block text-center"
-            to="/api/users/save"
+            to="/users/register"
           >
             Register here
           </Link>

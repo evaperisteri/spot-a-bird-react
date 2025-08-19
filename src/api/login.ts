@@ -20,10 +20,10 @@ export async function login({
   form.append("username", username);
   form.append("password", password);
 
-  const res = await fetch("http://localhost:5173/login", {
+  const res = await fetch("/api/auth/login", {
     method: "POST",
-    // headers: { "Content-Type": "application/x-www-form-urlencoded"},
-    body: form.toString(),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
   });
   if (!res.ok) {
     let detail = "Login Failed";
