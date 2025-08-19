@@ -42,7 +42,7 @@ export default function RegistrationPage() {
         throw new Error(error.message || "Registrartion Failed...");
       }
       toast.success("User registered successfully!");
-      navigate("/auth/login");
+      navigate("/login");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Something went Wrong...";

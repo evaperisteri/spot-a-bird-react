@@ -9,8 +9,8 @@ import ProtectedRoute from "./components/routes/ProtectedRoute";
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
           {/* Layout wraps all pages */}
           <Route path="/" element={<Layout />}>
@@ -26,7 +26,7 @@ export default function App() {
             </Route>
           </Route>
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

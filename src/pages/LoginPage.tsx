@@ -6,8 +6,8 @@ import { Button } from "../components/ui/button.tsx";
 import { Label } from "../components/ui/label.tsx";
 import { useAuth } from "../hooks/useAuth.ts";
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const { loginUser } = useAuth();
@@ -22,11 +22,15 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFields) => {
+    console.log("Form submitted with:", data);
     try {
+      console.log("Attempting login...");
       await loginUser(data);
+      console.log("Login successful, navigating...");
       toast.success("Login successful!");
       navigate("/dashboard");
     } catch (err) {
+      console.error("Login error:", err);
       toast.error(err instanceof Error ? err.message : "Login failed...");
     }
   };
@@ -63,7 +67,6 @@ export default function LoginPage() {
               id="password"
               type="password"
               className=" hover:border-eggshell"
-              autoFocus
               {...register("password")}
               disabled={isSubmitting}
             />
@@ -73,12 +76,7 @@ export default function LoginPage() {
           </div>
 
           <div className="flex justify-end">
-            <Button
-              type="submit"
-              {...({
-                disabled: isSubmitting,
-              } as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-            >
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Logging ..." : "Login"}
             </Button>
           </div>

@@ -2,7 +2,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { getCookie, setCookie, deleteCookie } from "../utils/cookies";
 import { jwtDecode } from "jwt-decode";
 import { login, type LoginFields } from "../api/login";
-import { AuthContext } from "../context/AuthContext.ts";
+import { AuthContext } from "./AuthContext";
 
 type JwtPayload = {
   username?: string;
@@ -32,16 +32,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const loginUser = async (fields: LoginFields) => {
+    console.log("AuthProvider:login started");
     const res = await login(fields);
-    setCookie("access_token", res.access_token, {
+    console.log("Login API response:", res);
+    setCookie("access_token", res.token, {
       expires: 1,
       sameSite: "Lax",
       secure: false,
       path: "/",
     });
-    setAccessToken(res.access_token);
+    setAccessToken(res.token);
     try {
-      const decoded = jwtDecode<JwtPayload>(res.access_token);
+      const decoded = jwtDecode<JwtPayload>(res.token);
       setUsername(decoded.username ?? null);
     } catch {
       setUsername(null);
@@ -49,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logoutUser = () => {
-    deleteCookie("access_token");
+    deleteCookie("token");
     setAccessToken(null);
     setUsername(null);
   };
