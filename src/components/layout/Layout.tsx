@@ -9,8 +9,8 @@ export default function Layout() {
         <div className="bg-offwhite/70 h-20">
           <Header />
         </div>
-        <div className=" overflow-auto">
-          <div className="mt-4 mx-auto w-full max-w-7xl sm:px-6 lg:px-8">
+        <div className=" overflow-auto ">
+          <div className="mt-4 mx-auto w-full max-w-7xl sm:px-6 lg:px-8 ">
             <Outlet />
           </div>
         </div>

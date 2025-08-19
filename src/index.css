@@ -156,3 +156,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom dropdown styles */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select option {
+  background: #fdfced; /* offwhite */
+  color: #5a4060; /* purple */
+}
+
+select option:checked {
+  background: #d9c7dd linear-gradient(0deg, #d9c7dd 0%, #d9c7dd 100%); /* lilac */
+  color: #5a4060;
+}
+
+select option:hover {
+  background-color: #d9c7dd; /* lilac */
+  color: #5a4060;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #5a4060; /* purple */
+  box-shadow: 0 0 0 1px #5a4060;
+}

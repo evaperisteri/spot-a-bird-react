@@ -24,19 +24,19 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFields) => {
     try {
       await loginUser(data);
-      toast.success("Login successfully");
+      toast.success("Login successfull!");
       navigate("/products");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Login failed");
+      toast.error(err instanceof Error ? err.message : "Login failed...");
     }
   };
 
   return (
     <>
-      <div className="items-center justify-center bg-offwhite/80 sm:px-6 lg:px-8">
+      <div className="items-center justify-center sm:px-6 lg:px-8">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="max-w-sm mx-auto p-8 space-y-4 border-2 border-eggshell/30 rounded bg-offwhite/80 my-12"
+          className="max-w-sm mx-auto p-8 space-y-4 border-2 border-eggshell/30 roundedmy-12  bg-offwhite/80 "
         >
           <h1 className="text-purple text-xl">Already a spotter?</h1>
           <div>
@@ -44,13 +44,14 @@ export default function LoginPage() {
               Username
             </Label>
             <Input
+              className=" hover:border-eggshell"
               id="username"
               autoFocus
               {...register("username")}
               disabled={isSubmitting}
             />
             {errors.username && (
-              <div className="text-cf-dark-red">{errors.username.message}</div>
+              <div className="text-rose-800">{errors.username.message}</div>
             )}
           </div>
 
@@ -61,27 +62,30 @@ export default function LoginPage() {
             <Input
               id="password"
               type="password"
+              className=" hover:border-eggshell"
               autoFocus
               {...register("password")}
               disabled={isSubmitting}
             />
             {errors.password && (
-              <div className="text-cf-dark-red">{errors.password.message}</div>
+              <div className="text-rose-800">{errors.password.message}</div>
             )}
           </div>
 
-          <Button
-            type="submit"
-            {...({
-              disabled: isSubmitting,
-            } as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-          >
-            {isSubmitting ? "Logging ..." : "Login"}
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              {...({
+                disabled: isSubmitting,
+              } as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+            >
+              {isSubmitting ? "Logging ..." : "Login"}
+            </Button>
+          </div>
           <p className="text-center">OR</p>
           <Link
-            className="text-purple font-sans hover:text-purple/70"
-            to="/register"
+            className="text-purple font-sans hover:text-purple/70 border border-purple hover:border-eggshell rounded-md p-2 shadow-soft block text-center"
+            to="/api/users/save"
           >
             Register here
           </Link>

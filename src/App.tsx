@@ -3,6 +3,7 @@ import Layout from "./components/layout/Layout";
 import HomePage from "./pages/HomePage";
 import { AuthProvider } from "./context/AuthProvider";
 import LoginPage from "./pages/LoginPage";
+import RegistrationPage from "./pages/RegistrationPage";
 
 export default function App() {
   return (
@@ -11,7 +12,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="login" element={<LoginPage />} />
+            <Route path="/auth/login" element={<LoginPage />} />
+            <Route path="/users/save" element={<RegistrationPage />} />
+
             {/* Other routes */}
           </Route>
         </Routes>
