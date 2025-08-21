@@ -1,7 +1,7 @@
 import {
   BirdwatchingLogReadOnlyDTO,
   BirdwatchingLogTableItem,
-} from "../types/birdwatching";
+} from "../types/birdwatchingTypes";
 
 export const transformLogForTable = (
   log: BirdwatchingLogReadOnlyDTO

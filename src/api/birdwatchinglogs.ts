@@ -5,7 +5,7 @@ import type {
   BirdwatchingLogReadOnlyDTO,
   BirdwatchingLogTableItem,
   CreateLogRequest,
-} from "../types/birdwatching";
+} from "../types/birdwatchingTypes";
 
 export interface PaginatedResponse<T> {
   content: T[];
@@ -36,8 +36,19 @@ export const birdwatchinglogs = {
   ): Promise<BirdwatchingLogReadOnlyDTO> => {
     const response = await authFetch("/api/bwlogs/save", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(logData),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `Failed to create log: ${response.status}`
+      );
+    }
+
     return response.json();
   },
 

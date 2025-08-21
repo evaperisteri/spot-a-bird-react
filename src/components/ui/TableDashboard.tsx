@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, Pencil, Trash } from "lucide-react";
 import { birdwatchinglogs } from "../../api/birdwatchinglogs";
-import type { BirdwatchingLogTableItem } from "../../types/birdwatching";
+import type { BirdwatchingLogTableItem } from "../../types/birdwatchingTypes";
 
 interface TableDashboardProps {
   logs?: BirdwatchingLogTableItem[];

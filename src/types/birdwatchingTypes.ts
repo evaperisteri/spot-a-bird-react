@@ -49,13 +49,6 @@ export interface PaginatedResponse<T> {
   empty: boolean;
 }
 
-export interface CreateLogRequest {
-  birdId: number;
-  quantity: number;
-  regionId: number;
-  observationDate?: string;
-}
-
 export interface BirdWatchingLogFilters {
   birdName?: string;
   scientificName?: string;
@@ -67,6 +60,22 @@ export interface BirdWatchingLogFilters {
   familyName?: string;
   familyId?: number;
   date?: string;
+}
+
+export interface CreateLogRequest {
+  birdName: string;
+  quantity: number;
+  regionName: string;
+}
+
+export interface BirdwatchingLogReadOnlyDTO {
+  id: number;
+  bird: BirdReadOnlyDTO;
+  quantity: number;
+  region: RegionReadOnlyDTO;
+  user: UserReadOnlyDTO;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GenericFilters {

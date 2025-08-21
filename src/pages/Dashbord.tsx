@@ -7,7 +7,7 @@ export default function Dashboard() {
     <div className="mt-4 p-4 md:p-8 rounded-xl shadow-soft border-2 border-lilac/60 bg-offwhite grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[80vh]">
       {/* Sidebar */}
       <div className="md:col-span-2 flex flex-col sm:flex-row md:flex-col gap-4 rounded-xl shadow-soft border-2 border-purple/80 p-4 items-center text-center justify-center">
-        <ButtonHome type="button" to="/newlog">
+        <ButtonHome type="button" to="/savelog">
           New Log
         </ButtonHome>
         <ButtonHome type="button" to="/stats">

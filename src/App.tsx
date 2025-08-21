@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import Dashboard from "./pages/Dashbord";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
+import NewLogPage from "./pages/NewLogPage";
 
 export default function App() {
   return (
@@ -22,7 +23,8 @@ export default function App() {
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              {/* You can add more protected routes here */}
+              <Route path="/savelog" element={<NewLogPage />} />
+              {/*More protected routes here */}
             </Route>
           </Route>
         </Routes>
