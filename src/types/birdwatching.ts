@@ -1,19 +1,41 @@
-export interface BirdwatchingLog {
-  id?: number;
-  birdName: string;
-  regionName: string;
+export interface BirdwatchingLogReadOnlyDTO {
+  id: number;
+  bird: BirdReadOnlyDTO;
   quantity: number;
-  observationDate?: string;
-  notes?: string;
-  // Add other fields based on your backend model
+  region: RegionReadOnlyDTO;
+  user: UserReadOnlyDTO;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CreateLogRequest {
-  birdName: string;
+export interface BirdReadOnlyDTO {
+  id: number;
+  name: string;
+  scientificName: string;
+  family: string;
+}
+
+export interface RegionReadOnlyDTO {
+  id: number;
+  name: string;
+}
+
+export interface UserReadOnlyDTO {
+  id: number;
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+}
+
+export interface BirdwatchingLogTableItem {
+  id: number;
+  commonName: string;
+  scientificName: string;
   regionName: string;
   quantity: number;
   observationDate?: string;
-  notes?: string;
+  user: UserReadOnlyDTO;
 }
 
 export interface PaginatedResponse<T> {
@@ -26,3 +48,34 @@ export interface PaginatedResponse<T> {
   last: boolean;
   empty: boolean;
 }
+
+export interface CreateLogRequest {
+  birdId: number;
+  quantity: number;
+  regionId: number;
+  observationDate?: string;
+}
+
+export interface BirdWatchingLogFilters {
+  birdName?: string;
+  scientificName?: string;
+  birdId?: number;
+  regionName?: string;
+  regionId?: number;
+  username?: string;
+  userId?: number;
+  familyName?: string;
+  familyId?: number;
+  date?: string;
+}
+
+export interface GenericFilters {
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: string;
+}
+
+export interface BirdWatchingLogFiltersWithPagination
+  extends BirdWatchingLogFilters,
+    GenericFilters {}

@@ -10,10 +10,12 @@ export default function Header() {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
 
-  const { isAuthenticated, logoutUser, username } = context;
+  const { isAuthenticated, logoutUser, username, firstname, lastname } =
+    context;
+  console.log(context);
   return (
     <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-20">
-      <nav className="flex flex-col md:flex-row justify-between max-w-7xl sm:px-6 lg:px-8">
+      <nav className="flex justify-between sm:px-6 lg:px-8">
         <Link
           to="/"
           className="flex items-center gap-4 hover:opacity-80 transition-opacity duration-200"
@@ -33,7 +35,7 @@ export default function Header() {
               to="./user-profile"
               className="decoration-none font-semibold tracking-wider underline text-purple hover:text-purple/80 transition"
             >
-              {username ?? "Profile"}
+              {firstname && lastname ? `${firstname} ${lastname}` : username}
             </Link>
             <div className="flex items-center gap-4 group relative">
               <button

@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   return (
-    <div className="mt-4 mx-10 p-4 md:p-8 rounded-xl shadow-soft border-2 border-lilac/60 bg-offwhite grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[80vh]">
+    <div className="mt-4 p-4 md:p-8 rounded-xl shadow-soft border-2 border-lilac/60 bg-offwhite grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[80vh]">
       {/* Sidebar */}
       <div className="md:col-span-2 flex flex-col sm:flex-row md:flex-col gap-4 rounded-xl shadow-soft border-2 border-purple/80 p-4 items-center text-center justify-center">
-        <ButtonHome type="button" to="/myinfo">
-          My Profile
-        </ButtonHome>
         <ButtonHome type="button" to="/newlog">
           New Log
+        </ButtonHome>
+        <ButtonHome type="button" to="/stats">
+          Stats
         </ButtonHome>
       </div>
 
@@ -47,7 +47,7 @@ export default function Dashboard() {
           <h2 className="font-logo text-purple mb-4 text-2xl">
             Spotted lately!
           </h2>
-          <TableDashboard />
+          <TableDashboard showHeader={false} />
         </div>
       </div>
     </div>

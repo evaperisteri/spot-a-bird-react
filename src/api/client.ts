@@ -1,7 +1,14 @@
 import { getCookie } from "../utils/cookies";
 
+// Add base URL configuration
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
 export async function authFetch(url: string, options: RequestInit = {}) {
   const token = getCookie("access_token");
+
+  // Prepend base URL to the endpoint
+  const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
 
   const headers = {
     "Content-Type": "application/json",
@@ -12,7 +19,9 @@ export async function authFetch(url: string, options: RequestInit = {}) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
+  console.log("Making API call to:", fullUrl); // Debug log
+
+  const response = await fetch(fullUrl, {
     ...options,
     headers,
   });
