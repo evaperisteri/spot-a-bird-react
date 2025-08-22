@@ -1,6 +1,7 @@
 import { authFetch } from "./client";
 import { transformLogsForTable } from "../utils/logTransform";
 import type {
+  BirdWatchingLogFilters,
   BirdWatchingLogFiltersWithPagination,
   BirdwatchingLogReadOnlyDTO,
   BirdwatchingLogTableItem,
@@ -22,13 +23,37 @@ export const birdwatchinglogs = {
   getPaginatedLogs: async (
     page: number = 0,
     size: number = 10,
-    sortBy: string = "createdAt", // Changed from observationDate to createdAt
+    sortBy: string = "createdAt",
     sortDirection: string = "DESC"
   ): Promise<PaginatedResponse<BirdwatchingLogReadOnlyDTO>> => {
     const response = await authFetch(
       `/api/bwlogs/paginated?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
     );
     return response.json();
+  },
+
+  getFilteredLogs: async (
+    filters: BirdWatchingLogFilters
+  ): Promise<BirdwatchingLogTableItem[]> => {
+    try {
+      const response = await authFetch("/api/bwlogs/filtered", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(filters),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch filtered logs: ${response.status}`);
+      }
+
+      const data: BirdwatchingLogReadOnlyDTO[] = await response.json();
+      return transformLogsForTable(data || []);
+    } catch (error) {
+      console.error("Error fetching filtered logs:", error);
+      throw error;
+    }
   },
 
   createLog: async (
@@ -63,6 +88,9 @@ export const birdwatchinglogs = {
   ): Promise<BirdwatchingLogReadOnlyDTO> => {
     const response = await authFetch(`/api/bwlogs/${id}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(logData),
     });
     return response.json();
@@ -77,8 +105,8 @@ export const birdwatchinglogs = {
   getMyLogsPaginated: async (
     page: number = 0,
     size: number = 10,
-    sortBy: string = "createdAt", // Add these parameters
-    sortDirection: string = "DESC" // Add these parameters
+    sortBy: string = "createdAt",
+    sortDirection: string = "DESC"
   ): Promise<PaginatedResponse<BirdwatchingLogTableItem>> => {
     const response = await authFetch(
       `/api/bwlogs/my-logs?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
@@ -112,9 +140,13 @@ export const birdwatchinglogs = {
       `/api/bwlogs/filtered/paginated?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`,
       {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(filters),
       }
     );
+
     const data = await response.json();
 
     return {
@@ -125,11 +157,13 @@ export const birdwatchinglogs = {
 
   searchLogs: async (
     searchTerm: string
-  ): Promise<BirdwatchingLogReadOnlyDTO[]> => {
-    const response = await authFetch("/api/bwlogs/filtered", {
-      method: "POST",
-      body: JSON.stringify({ birdName: searchTerm }),
-    });
-    return response.json();
+  ): Promise<BirdwatchingLogTableItem[]> => {
+    const filters: BirdWatchingLogFilters = {
+      birdName: searchTerm,
+      scientificName: searchTerm,
+      regionName: searchTerm,
+    };
+
+    return birdwatchinglogs.getFilteredLogs(filters);
   },
 };

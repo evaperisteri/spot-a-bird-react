@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Eye, Pencil, Trash } from "lucide-react";
 import { birdwatchinglogs } from "../../api/birdwatchinglogs";
@@ -29,45 +29,49 @@ export default function TableDashboard({
 
   const logs = externalLogs || internalLogs;
 
-  const fetchMyLogs = async (
-    page: number = 0,
-    size: number = 10,
-    sortBy: string = "createdAt",
-    sortDirection: string = "DESC"
-  ) => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Define fetchMyLogs with useCallback to avoid recreation on every render
+  const fetchMyLogs = useCallback(
+    async (
+      page: number = 0,
+      size: number = 10,
+      sortBy: string = "createdAt",
+      sortDirection: string = "DESC"
+    ) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const data = await birdwatchinglogs.getMyLogsPaginated(
-        page,
-        size,
-        sortBy,
-        sortDirection
-      );
+        const data = await birdwatchinglogs.getMyLogsPaginated(
+          page,
+          size,
+          sortBy,
+          sortDirection
+        );
 
-      setInternalLogs(data.content || []);
-      setPagination({
-        page: data.number ?? page,
-        size: data.size ?? size,
-        totalPages: data.totalPages,
-        totalElements: data.totalElements,
-      });
+        setInternalLogs(data.content || []);
+        setPagination({
+          page: data.number ?? page,
+          size: data.size ?? size,
+          totalPages: data.totalPages,
+          totalElements: data.totalElements,
+        });
 
-      onLogsChange?.(data.content || []);
-    } catch (error) {
-      console.error("Error fetching logs:", error);
-      setError("Failed to fetch logs. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+        onLogsChange?.(data.content || []);
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+        setError("Failed to fetch logs. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [onLogsChange]
+  ); // Add dependencies that fetchMyLogs uses
 
   useEffect(() => {
     if (!externalLogs) {
       fetchMyLogs(0, 10, "createdAt", "DESC");
     }
-  }, [externalLogs]);
+  }, [externalLogs, fetchMyLogs]); // Add fetchMyLogs to dependencies
 
   const handleDelete = async (logId: number) => {
     if (!confirm("Are you sure you want to delete this log?")) return;
@@ -101,7 +105,7 @@ export default function TableDashboard({
       <div className="text-center p-8 bg-red-50 rounded-lg">
         <p className="text-rose-800 mb-4">{error}</p>
         <button
-          onClick={() => fetchMyLogs()}
+          onClick={() => fetchMyLogs(pagination.page, pagination.size)}
           className="bg-purple text-white px-4 py-2 rounded-md hover:bg-purple/80 transition-colors"
         >
           Try Again

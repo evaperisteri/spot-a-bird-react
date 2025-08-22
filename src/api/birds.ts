@@ -2,9 +2,10 @@ import { authFetch } from "./client";
 
 export interface Bird {
   id: number;
-  name: string;
+  commonName: string;
   scientificName: string;
-  family?: string;
+  familyName?: string;
+  displayText: string;
 }
 
 export const birdsService = {
@@ -13,12 +14,15 @@ export const birdsService = {
     if (!response.ok) {
       throw new Error("Failed to fetch birds");
     }
-    return response.json();
+    const data = await response.json();
+    console.log(response);
+    console.log(data);
+    return data.content ?? [];
   },
 
   searchBirds: async (query: string): Promise<Bird[]> => {
     const response = await authFetch(
-      `/api/birds/search?name=${encodeURIComponent(query)}`
+      `/api/birds/search?query=${encodeURIComponent(query)}`
     );
     if (!response.ok) {
       throw new Error("Failed to search birds");
