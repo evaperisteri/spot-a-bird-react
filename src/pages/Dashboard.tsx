@@ -1,25 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import TableDashboard from "../components/ui/TableDashboard";
 import { birdwatchinglogs } from "../api/birdwatchinglogs";
 import type {
   BirdwatchingLogTableItem,
-  BirdWatchingLogFilters,
+  BirdwatchingLogReadOnlyDTO,
 } from "../types/birdwatchingTypes";
+import { Search } from "lucide-react";
+
+// Mapping function
+const mapLogDTOtoTableItem = (
+  dto: BirdwatchingLogReadOnlyDTO
+): BirdwatchingLogTableItem => ({
+  id: dto.id,
+  commonName: dto.bird.name,
+  scientificName: dto.bird.scientificName,
+  regionName: dto.region.name,
+  quantity: dto.quantity,
+  user: dto.user,
+  observationDate: dto.createdAt,
+});
 
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [allLogs, setAllLogs] = useState<BirdwatchingLogTableItem[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<BirdwatchingLogTableItem[]>(
     []
   );
   const [isSearching, setIsSearching] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Handle search submission
+  // Fetch all logs on mount
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        setIsLoading(true);
+        const response = await birdwatchinglogs.getPaginatedLogs(
+          0,
+          1000, // Increased to get more logs
+          "createdAt",
+          "DESC"
+        );
+        const mappedLogs = (response.content || []).map(mapLogDTOtoTableItem);
+        setAllLogs(mappedLogs);
+      } catch (err) {
+        console.error("Failed to fetch logs:", err);
+        setError("Could not load logs.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLogs();
+  }, []);
+
+  // Client-side filtering using useMemo for performance
+  const clientFilteredLogs = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return [];
+    }
+
+    const term = searchTerm.toLowerCase().trim();
+    return allLogs.filter(
+      (log) =>
+        log.commonName.toLowerCase().includes(term) ||
+        log.scientificName.toLowerCase().includes(term) ||
+        log.regionName.toLowerCase().includes(term) ||
+        log.user?.username.toLowerCase().includes(term)
+    );
+  }, [searchTerm, allLogs]);
+
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
-      setFilteredLogs([]);
       setIsSearching(false);
+      setFilteredLogs([]);
       return;
     }
 
@@ -27,36 +81,35 @@ export default function Dashboard() {
     setError(null);
 
     try {
-      const filters: BirdWatchingLogFilters = {
-        searchTerm: searchTerm.trim(),
-      };
-
-      const response = await birdwatchinglogs.getFilteredPaginatedLogs(
-        filters,
+      // Try server-side search first
+      const response = await birdwatchinglogs.searchLogs(
+        searchTerm.trim(),
         0, // page
-        50, // size (or any reasonable limit)
+        50, // size
         "createdAt", // sortBy
         "DESC" // sortDirection
       );
 
-      setFilteredLogs(response.content || []);
+      const mappedLogs = (response.content || []).map(mapLogDTOtoTableItem);
+      setFilteredLogs(mappedLogs);
       setIsSearching(true);
     } catch (err) {
-      console.error("Search error:", err);
-      setError("Failed to search logs. Please try again.");
+      console.error("Server search error, falling back to client search:", err);
+
+      // Fall back to client-side search if server search fails
+      setFilteredLogs(clientFilteredLogs);
+      setIsSearching(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle pressing Enter key in search input
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
-  // Clear search and show all logs again
   const clearSearch = () => {
     setSearchTerm("");
     setFilteredLogs([]);
@@ -64,15 +117,18 @@ export default function Dashboard() {
     setError(null);
   };
 
+  // Determine which logs to display
+  const logsToDisplay = isSearching ? filteredLogs : allLogs;
+
   return (
     <>
       <div className="flex space-x-4 mb-6">
         <input
           type="text"
-          placeholder="What are you looking for? (bird name, location, etc.)"
+          placeholder="What are you looking for? (bird name, location, spotter, etc.)"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyUp={handleKeyPress}
           className="block bg-lilac/40 border border-purple rounded-lg w-full p-3 hover:ring-2 hover:ring-purple/70 focus:outline-2 focus:outline-offset-2 focus:outline-sage font-sans text-purple font-thin tracking-wider"
         />
         <button
@@ -83,26 +139,18 @@ export default function Dashboard() {
         >
           {isLoading ? (
             <span className="flex gap-2">
-              <svg
-                className="animate-spin my-auto w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 .398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-              </svg>
+              <Search
+                className="my-auto w-5 h-5 text-purple"
+                strokeWidth={1.5}
+              />
               Searching...
             </span>
           ) : (
             <span className="flex gap-2">
-              <svg
-                className="my-auto w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-              </svg>
+              <Search
+                className="my-auto w-5 h-5 text-purple"
+                strokeWidth={1.5}
+              />
               Search
             </span>
           )}
@@ -129,22 +177,24 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="font-logo text-purple text-2xl">
             {isSearching
-              ? `Search Results (${filteredLogs.length})`
-              : "Spotted lately!"}
+              ? `Search Results (${logsToDisplay.length})`
+              : "All Recent Sightings"}
           </h2>
 
-          {isSearching && filteredLogs.length > 0 && (
+          {isSearching && logsToDisplay.length > 0 && (
             <span className="text-purple/70 font-sans">
-              Found {filteredLogs.length} matching logs
+              Found {logsToDisplay.length} matching logs
             </span>
           )}
         </div>
 
-        {/* Pass the filtered logs to TableDashboard when searching */}
-        {isSearching ? (
-          <TableDashboard logs={filteredLogs} showHeader={false} />
+        {isLoading ? (
+          <div className="text-center p-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple mx-auto"></div>
+            <p className="mt-4 text-purple/70">Loading logs...</p>
+          </div>
         ) : (
-          <TableDashboard showHeader={false} />
+          <TableDashboard logs={logsToDisplay} showHeader={true} />
         )}
       </div>
     </>

@@ -131,15 +131,7 @@ export default function TableDashboard({
   return (
     <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
       {showHeader && (
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-logo text-purple">Recent Sightings</h2>
-          <Link
-            to="/newlog"
-            className="bg-sage text-offwhite px-4 py-2 rounded-md hover:bg-sage/80 transition-colors font-sans"
-          >
-            + New Log
-          </Link>
-        </div>
+        <div className="flex justify-between items-center mb-6"></div>
       )}
 
       <div className="overflow-x-auto">
@@ -157,6 +149,9 @@ export default function TableDashboard({
               </th>
               <th className="p-3 text-left font-sans font-semibold text-purple">
                 Quantity
+              </th>
+              <th className="p-3 text-left font-sans font-semibold text-purple">
+                Spotter
               </th>
               <th className="p-3 text-left font-sans font-semibold text-purple">
                 Date
@@ -181,6 +176,9 @@ export default function TableDashboard({
                 <td className="p-3 font-sans text-purple">{log.regionName}</td>
                 <td className="p-3 font-sans text-purple text-center">
                   {log.quantity}
+                </td>
+                <td className="p-3 font-sans text-purple">
+                  {log.user?.username}
                 </td>
                 <td className="p-3 font-sans text-purple">
                   {log.observationDate

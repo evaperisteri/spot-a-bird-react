@@ -4,7 +4,8 @@ import { birdwatchinglogs } from "../../api/birdwatchinglogs";
 import { Bird } from "../../api/birds";
 import { regionsService, Region } from "../../api/regions";
 import LoadingSpinner from "./LoadingSpinner";
-import BirdSearchComboBox from "./BirdSearchComboBox";
+import { BirdSearchComboBox } from "./BirdSearchComboBox";
+import { ChevronsUpDownIcon } from "lucide-react";
 
 interface FormData {
   birdName: string;
@@ -155,7 +156,7 @@ export default function Logform() {
           >
             Region of Greece *
           </label>
-          <select
+          {/* <select
             id="regionName"
             name="regionName"
             value={formData.regionName}
@@ -164,7 +165,7 @@ export default function Logform() {
             className="w-full px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans"
           >
             <option value="">Select a region in Greece</option>
-            {/* Safely render region options */}
+            
             {Array.isArray(regions) && regions.length > 0 ? (
               regions.map((region) => (
                 <option key={region.id} value={region.name}>
@@ -176,7 +177,34 @@ export default function Logform() {
                 No regions found
               </option>
             )}
-          </select>
+          </select> */}
+          <div className="relative">
+            <select
+              id="regionName"
+              name="regionName"
+              value={formData.regionName}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans appearance-none" // Added appearance-none
+            >
+              <option value="">Select a region in Greece</option>
+              {Array.isArray(regions) && regions.length > 0 ? (
+                regions.map((region) => (
+                  <option key={region.id} value={region.name}>
+                    {region.name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No regions found
+                </option>
+              )}
+            </select>
+            {/* Chevron icon */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <ChevronsUpDownIcon className="h-5 w-5 text-purple/70" />
+            </div>
+          </div>
         </div>
 
         <div className="pt-4">

@@ -135,7 +135,7 @@ export const birdwatchinglogs = {
     size: number = 10,
     sortBy: string = "createdAt",
     sortDirection: string = "DESC"
-  ): Promise<PaginatedResponse<BirdwatchingLogTableItem>> => {
+  ): Promise<PaginatedResponse<BirdwatchingLogReadOnlyDTO>> => {
     const response = await authFetch(
       `/api/bwlogs/filtered/paginated?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`,
       {
@@ -157,14 +157,22 @@ export const birdwatchinglogs = {
   },
 
   searchLogs: async (
-    searchTerm: string
-  ): Promise<BirdwatchingLogTableItem[]> => {
-    const filters: BirdWatchingLogFilters = {
-      birdName: searchTerm,
-      scientificName: searchTerm,
-      regionName: searchTerm,
-    };
+    query: string,
+    page: number = 0,
+    size: number = 10,
+    sortBy: string = "createdAt",
+    sortDirection: string = "DESC"
+  ): Promise<PaginatedResponse<BirdwatchingLogReadOnlyDTO>> => {
+    const response = await authFetch(
+      `/api/bwlogs/search?query=${encodeURIComponent(
+        query
+      )}&page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
+    );
 
-    return birdwatchinglogs.getFilteredLogs(filters);
+    const data = await response.json();
+    return {
+      ...data,
+      content: data.content || [],
+    };
   },
 };
