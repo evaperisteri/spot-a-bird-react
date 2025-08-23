@@ -146,8 +146,9 @@ export const birdwatchinglogs = {
         body: JSON.stringify(filters),
       }
     );
-
+    console.log(filters);
     const data = await response.json();
+    console.log(data);
 
     return {
       ...data,

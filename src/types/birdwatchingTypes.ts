@@ -60,6 +60,7 @@ export interface BirdWatchingLogFilters {
   familyName?: string;
   familyId?: number;
   date?: string;
+  searchTerm?: string;
 }
 
 export interface CreateLogRequest {

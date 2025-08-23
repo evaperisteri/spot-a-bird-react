@@ -28,13 +28,18 @@ export default function Dashboard() {
 
     try {
       const filters: BirdWatchingLogFilters = {
-        birdName: searchTerm,
-        scientificName: searchTerm,
-        regionName: searchTerm,
+        searchTerm: searchTerm.trim(),
       };
 
-      const logs = await birdwatchinglogs.getFilteredLogs(filters);
-      setFilteredLogs(logs);
+      const response = await birdwatchinglogs.getFilteredPaginatedLogs(
+        filters,
+        0, // page
+        50, // size (or any reasonable limit)
+        "createdAt", // sortBy
+        "DESC" // sortDirection
+      );
+
+      setFilteredLogs(response.content || []);
       setIsSearching(true);
     } catch (err) {
       console.error("Search error:", err);
