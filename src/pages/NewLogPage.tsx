@@ -1,4 +1,4 @@
-import ErrorBoundary from "../components/ErrorBoubdary";
+import ErrorBoundary from "../components/ErrorBoundary";
 import Logform from "../components/ui/Logform";
 
 export default function NewLogPage() {
