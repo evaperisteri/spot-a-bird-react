@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Eye, Pencil, Trash } from "lucide-react";
 import { birdwatchinglogs } from "../../api/birdwatchinglogs";
@@ -28,28 +28,52 @@ export default function TableDashboard({
     totalPages: 0,
     totalElements: 0,
   });
+  const [sortLoading, setSortLoading] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    sortBy: "createdAt" as "createdAt" | "birdName" | "regionName",
+    sortDirection: "DESC" as "ASC" | "DESC",
+  });
 
-  const logs = externalLogs || internalLogs;
+  const initialLoad = useRef(true);
 
-  // Define fetchMyLogs with useCallback to avoid recreation on every render
+  const getSortedLogs = useCallback(() => {
+    if (!externalLogs) return internalLogs; // Server-side sorted
+
+    // Client-side sorting for external logs
+    return [...(externalLogs || [])].sort((a, b) => {
+      const direction = sortConfig.sortDirection === "ASC" ? 1 : -1;
+
+      switch (sortConfig.sortBy) {
+        case "createdAt": {
+          const dateA = new Date(a.observationDate || 0).getTime();
+          const dateB = new Date(b.observationDate || 0).getTime();
+          return (dateB - dateA) * direction;
+        }
+        case "birdName":
+          return a.commonName.localeCompare(b.commonName) * direction;
+
+        case "regionName":
+          return a.regionName.localeCompare(b.regionName) * direction;
+
+        default:
+          return 0;
+      }
+    });
+  }, [externalLogs, internalLogs, sortConfig]);
+
+  const sortedLogs = getSortedLogs();
+
   const fetchMyLogs = useCallback(
-    async (
-      page: number = 0,
-      size: number = 10,
-      sortBy: string = "createdAt",
-      sortDirection: string = "DESC"
-    ) => {
+    async (page: number = 0, size: number = 10) => {
       try {
         setLoading(true);
         setError(null);
-
         const data = await birdwatchinglogs.getMyLogsPaginated(
           page,
           size,
-          sortBy,
-          sortDirection
+          sortConfig.sortBy,
+          sortConfig.sortDirection
         );
-
         setInternalLogs(data.content || []);
         setPagination({
           page: data.number ?? page,
@@ -57,23 +81,46 @@ export default function TableDashboard({
           totalPages: data.totalPages,
           totalElements: data.totalElements,
         });
-
         onLogsChange?.(data.content || []);
       } catch (error) {
         console.error("Error fetching logs:", error);
         setError("Failed to fetch logs. Please try again.");
       } finally {
         setLoading(false);
+        setSortLoading(false);
       }
     },
-    [onLogsChange]
-  ); // Add dependencies that fetchMyLogs uses
+    [onLogsChange, sortConfig]
+  );
 
+  const handleSort = async (field: "createdAt" | "birdName" | "regionName") => {
+    setSortLoading(true);
+    setSortConfig((prev) => ({
+      sortBy: field,
+      sortDirection:
+        prev.sortBy === field && prev.sortDirection === "ASC" ? "DESC" : "ASC",
+    }));
+
+    // For external logs, we don't need to refetch - just sort client-side
+    if (externalLogs) {
+      setTimeout(() => setSortLoading(false), 100); // Quick visual feedback
+    }
+  };
+
+  // Initial fetch - only for user's own logs
   useEffect(() => {
     if (!externalLogs) {
-      fetchMyLogs(0, 10, "createdAt", "DESC");
+      fetchMyLogs(0, 10);
     }
-  }, [externalLogs, fetchMyLogs]); // Add fetchMyLogs to dependencies
+  }, [externalLogs, fetchMyLogs]);
+
+  // Refetch when sort changes - only for user's own logs
+  useEffect(() => {
+    if (!externalLogs && !initialLoad.current) {
+      fetchMyLogs(0, pagination.size);
+    }
+    initialLoad.current = false;
+  }, [sortConfig, externalLogs, fetchMyLogs, pagination.size]);
 
   const handleDelete = async (logId: number) => {
     if (!confirm("Are you sure you want to delete this log?")) return;
@@ -85,7 +132,7 @@ export default function TableDashboard({
         fetchMyLogs(pagination.page, pagination.size);
       } else {
         // If using external logs, let parent handle refresh
-        onLogsChange?.(logs.filter((log) => log.id !== logId));
+        onLogsChange?.(sortedLogs.filter((log) => log.id !== logId));
       }
     } catch (error) {
       console.error("Error deleting log:", error);
@@ -116,7 +163,7 @@ export default function TableDashboard({
     );
   }
 
-  if (logs.length === 0) {
+  if (sortedLogs.length === 0) {
     return (
       <div className="text-center p-8 bg-offwhite/50 rounded-lg">
         <p className="text-purple/70 mb-4">No birdwatching logs found.</p>
@@ -140,14 +187,24 @@ export default function TableDashboard({
         <table className="w-full border-collapse">
           <thead className="bg-purple/10">
             <tr className="border-b-2 border-purple/30">
-              <th className="p-3 text-left font-sans font-semibold text-purple">
-                Common Name
+              <th
+                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                onClick={() => handleSort("birdName")}
+              >
+                Common Name{" "}
+                {sortConfig.sortBy === "birdName" &&
+                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
               </th>
               <th className="p-3 text-left font-sans font-semibold text-purple">
                 Scientific Name
               </th>
-              <th className="p-3 text-left font-sans font-semibold text-purple">
-                Location
+              <th
+                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                onClick={() => handleSort("regionName")}
+              >
+                Location{" "}
+                {sortConfig.sortBy === "regionName" &&
+                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
               </th>
               <th className="p-3 text-left font-sans font-semibold text-purple">
                 Quantity
@@ -155,8 +212,22 @@ export default function TableDashboard({
               <th className="p-3 text-left font-sans font-semibold text-purple">
                 Spotter
               </th>
-              <th className="p-3 text-left font-sans font-semibold text-purple">
-                Date
+              <th
+                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                onClick={() => handleSort("createdAt")}
+              >
+                Date{" "}
+                {sortConfig.sortBy === "createdAt" && (
+                  <>
+                    {sortLoading ? (
+                      <span className="animate-spin">⏳</span>
+                    ) : sortConfig.sortDirection === "ASC" ? (
+                      "↑"
+                    ) : (
+                      "↓"
+                    )}
+                  </>
+                )}
               </th>
               <th className="p-3 text-center font-sans font-semibold text-purple">
                 Actions
@@ -164,7 +235,7 @@ export default function TableDashboard({
             </tr>
           </thead>
           <tbody className="text-sm md:text-base">
-            {logs.map((log) => (
+            {sortedLogs.map((log) => (
               <tr
                 key={log.id}
                 className="border-b border-purple/10 hover:bg-lilac/20 transition-colors"
