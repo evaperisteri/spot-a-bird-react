@@ -247,7 +247,6 @@ export default function TableDashboard({
           <table className="w-full border-collapse ">
             <thead className="bg-purple/10">
               <tr className="border-b-2 border-purple/30">
-                {/* Common Name - Already sortable */}
                 <th
                   className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                   onClick={() => handleSort("birdName")}
@@ -257,7 +256,6 @@ export default function TableDashboard({
                     (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
                 </th>
 
-                {/* Scientific Name - Make sortable */}
                 <th
                   className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                   onClick={() => handleSort("scientificName")}
@@ -267,7 +265,6 @@ export default function TableDashboard({
                     (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
                 </th>
 
-                {/* Location - Already sortable */}
                 <th
                   className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                   onClick={() => handleSort("regionName")}
@@ -277,12 +274,10 @@ export default function TableDashboard({
                     (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
                 </th>
 
-                {/* Quantity - Keep as is (not sortable) */}
                 <th className="p-3 text-left font-sans font-semibold text-purple">
                   Quantity
                 </th>
 
-                {/* Spotter - Make sortable */}
                 <th
                   className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                   onClick={() => handleSort("spotter")}
@@ -292,7 +287,6 @@ export default function TableDashboard({
                     (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
                 </th>
 
-                {/* Date - Already sortable */}
                 <th
                   className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                   onClick={() => handleSort("createdAt")}
@@ -439,8 +433,7 @@ export default function TableDashboard({
             </button>
           </div>
         )}
-      </div>{" "}
-      // ← This closing div was missing
+      </div>
     </>
   );
 }
