@@ -11,6 +11,4 @@ export const registerSchema = z.object({
   gender: z.enum(["MALE", "FEMALE", "NON-BINARY", "GENDERFLUID", "OTHER"]),
 });
 
-export type RegisterFields = z.infer<typeof registerSchema> & {
-  isActive: boolean;
-};
+export type RegisterFields = z.infer<typeof registerSchema>;
