@@ -40,6 +40,8 @@ export default function TableDashboard({
   });
 
   const initialLoad = useRef(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 10;
 
   const getSortedLogs = useCallback(() => {
     if (!externalLogs) return internalLogs; // Server-side sorted
@@ -76,6 +78,23 @@ export default function TableDashboard({
   }, [externalLogs, internalLogs, sortConfig]);
 
   const sortedLogs = getSortedLogs();
+  const totalPages = externalLogs
+    ? Math.ceil(sortedLogs.length / itemsPerPage)
+    : pagination.totalPages;
+  // Calculate client-side pagination for external logs
+  const getPaginatedLogs = useCallback(() => {
+    if (!externalLogs) return internalLogs; // Server-side paginated
+
+    // Client-side pagination for external logs
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return sortedLogs.slice(startIndex, endIndex);
+  }, [externalLogs, internalLogs, sortedLogs, currentPage]);
+
+  const paginatedLogs = getPaginatedLogs();
+  useEffect(() => {
+    setCurrentPage(0); // Reset to first page when sorting changes
+  }, [sortConfig]);
 
   const fetchMyLogs = useCallback(
     async (page: number = 0, size: number = 10) => {
@@ -218,164 +237,180 @@ export default function TableDashboard({
   }
 
   return (
-    <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
-      {showHeader && (
-        <div className="flex justify-between items-center mb-6"></div>
-      )}
+    <>
+      <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
+        {showHeader && (
+          <div className="flex justify-between items-center mb-6"></div>
+        )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead className="bg-purple/10">
-            <tr className="border-b-2 border-purple/30">
-              {/* Common Name - Already sortable */}
-              <th
-                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
-                onClick={() => handleSort("birdName")}
-              >
-                Common Name{" "}
-                {sortConfig.sortBy === "birdName" &&
-                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
-              </th>
+        <div className="overflow-x-auto border border-offwhite rounded-lg">
+          <table className="w-full border-collapse ">
+            <thead className="bg-purple/10">
+              <tr className="border-b-2 border-purple/30">
+                {/* Common Name - Already sortable */}
+                <th
+                  className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                  onClick={() => handleSort("birdName")}
+                >
+                  Common Name{" "}
+                  {sortConfig.sortBy === "birdName" &&
+                    (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
+                </th>
 
-              {/* Scientific Name - Make sortable */}
-              <th
-                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
-                onClick={() => handleSort("scientificName")}
-              >
-                Scientific Name{" "}
-                {sortConfig.sortBy === "scientificName" &&
-                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
-              </th>
+                {/* Scientific Name - Make sortable */}
+                <th
+                  className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                  onClick={() => handleSort("scientificName")}
+                >
+                  Scientific Name{" "}
+                  {sortConfig.sortBy === "scientificName" &&
+                    (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
+                </th>
 
-              {/* Location - Already sortable */}
-              <th
-                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
-                onClick={() => handleSort("regionName")}
-              >
-                Location{" "}
-                {sortConfig.sortBy === "regionName" &&
-                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
-              </th>
+                {/* Location - Already sortable */}
+                <th
+                  className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                  onClick={() => handleSort("regionName")}
+                >
+                  Location{" "}
+                  {sortConfig.sortBy === "regionName" &&
+                    (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
+                </th>
 
-              {/* Quantity - Keep as is (not sortable) */}
-              <th className="p-3 text-left font-sans font-semibold text-purple">
-                Quantity
-              </th>
+                {/* Quantity - Keep as is (not sortable) */}
+                <th className="p-3 text-left font-sans font-semibold text-purple">
+                  Quantity
+                </th>
 
-              {/* Spotter - Make sortable */}
-              <th
-                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
-                onClick={() => handleSort("spotter")}
-              >
-                Spotter{" "}
-                {sortConfig.sortBy === "spotter" &&
-                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
-              </th>
+                {/* Spotter - Make sortable */}
+                <th
+                  className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                  onClick={() => handleSort("spotter")}
+                >
+                  Spotter{" "}
+                  {sortConfig.sortBy === "spotter" &&
+                    (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
+                </th>
 
-              {/* Date - Already sortable */}
-              <th
-                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
-                onClick={() => handleSort("createdAt")}
-              >
-                Date{" "}
-                {sortConfig.sortBy === "createdAt" && (
-                  <>
-                    {sortLoading ? (
-                      <span className="animate-spin">⏳</span>
-                    ) : sortConfig.sortDirection === "ASC" ? (
-                      "↑"
-                    ) : (
-                      "↓"
-                    )}
-                  </>
-                )}
-              </th>
-
-              <th className="p-3 text-center font-sans font-semibold text-purple">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="text-sm md:text-base">
-            {sortedLogs.map((log) => (
-              <tr
-                key={log.id}
-                className="border-b border-purple/10 hover:bg-lilac/20 transition-colors"
-              >
-                <td className="p-3 font-sans text-purple font-medium">
-                  {log.commonName}
-                </td>
-                <td className="p-3 font-sans text-purple/70 text-sm">
-                  {log.scientificName}
-                </td>
-                <td className="p-3 font-sans text-purple">{log.regionName}</td>
-                <td className="p-3 font-sans text-purple text-center">
-                  {log.quantity}
-                </td>
-                <td className="p-3 font-sans text-purple">
-                  {log.user?.username}
-                </td>
-                <td className="p-3 font-sans text-purple">
-                  {log.observationDate
-                    ? new Date(log.observationDate).toLocaleDateString()
-                    : "No date available"}
-                </td>
-                <td className="p-3 flex justify-center space-x-3">
-                  <Link
-                    to={`/logs/${log.id}`}
-                    className="p-1 hover:bg-lilac/30 rounded transition-colors"
-                    title="View details"
-                  >
-                    <Eye className="w-4 h-4 text-purple/70 hover:text-purple" />
-                  </Link>
-                  {log.user?.id === currentUserId && (
-                    <Link
-                      to={`/logs/${log.id}/edit`}
-                      className="p-1 hover:bg-lilac/30 rounded transition-colors"
-                      title="Edit log"
-                    >
-                      <Pencil className="w-4 h-4 text-purple/70 hover:text-sage" />
-                    </Link>
+                {/* Date - Already sortable */}
+                <th
+                  className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                  onClick={() => handleSort("createdAt")}
+                >
+                  Date{" "}
+                  {sortConfig.sortBy === "createdAt" && (
+                    <>
+                      {sortLoading ? (
+                        <span className="animate-spin">⏳</span>
+                      ) : sortConfig.sortDirection === "ASC" ? (
+                        "↑"
+                      ) : (
+                        "↓"
+                      )}
+                    </>
                   )}
-                  {log.user?.id === currentUserId && (
-                    <button
-                      onClick={() => handleDelete(log.id)}
-                      className="p-1 hover:bg-lilac/30 rounded transition-colors"
-                      title="Delete log"
-                    >
-                      <Trash className="w-4 h-4 text-purple/70 hover:text-red-400" />
-                    </button>
-                  )}
-                </td>
+                </th>
+
+                <th className="p-3 text-center font-sans font-semibold text-purple">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="text-sm md:text-base">
+              {paginatedLogs.map((log) => (
+                <tr
+                  key={log.id}
+                  className="border-b border-purple/10 hover:bg-lilac/20 transition-colors"
+                >
+                  <td className="p-3 font-sans text-purple font-medium">
+                    {log.commonName}
+                  </td>
+                  <td className="p-3 font-sans text-purple/70 text-sm">
+                    {log.scientificName}
+                  </td>
+                  <td className="p-3 font-sans text-purple">
+                    {log.regionName}
+                  </td>
+                  <td className="p-3 font-sans text-purple text-center">
+                    {log.quantity}
+                  </td>
+                  <td className="p-3 font-sans text-purple">
+                    {log.user?.username}
+                  </td>
+                  <td className="p-3 font-sans text-purple">
+                    {log.observationDate
+                      ? new Date(log.observationDate).toLocaleDateString()
+                      : "No date available"}
+                  </td>
+                  <td className="p-3 flex justify-center space-x-3">
+                    <Link
+                      to={`/logs/${log.id}`}
+                      className="p-1 hover:bg-lilac/30 rounded transition-colors"
+                      title="View details"
+                    >
+                      <Eye className="w-4 h-4 text-purple/70 hover:text-purple" />
+                    </Link>
+                    {log.user?.id === currentUserId && (
+                      <Link
+                        to={`/logs/${log.id}/edit`}
+                        className="p-1 hover:bg-lilac/30 rounded transition-colors"
+                        title="Edit log"
+                      >
+                        <Pencil className="w-4 h-4 text-purple/70 hover:text-sage" />
+                      </Link>
+                    )}
+                    {log.user?.id === currentUserId && (
+                      <button
+                        onClick={() => handleDelete(log.id)}
+                        className="p-1 hover:bg-lilac/30 rounded transition-colors"
+                        title="Delete log"
+                      >
+                        <Trash className="w-4 h-4 text-purple/70 hover:text-red-400" />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Pagination Controls - only show if not using external logs */}
-      {!externalLogs && pagination.totalPages > 1 && (
-        <div className="flex justify-center items-center mt-6 space-x-2">
-          <button
-            onClick={() => fetchMyLogs(pagination.page - 1, pagination.size)}
-            disabled={pagination.page === 0}
-            className="px-3 py-1 rounded-md bg-lilac/30 text-purple hover:bg-lilac/50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center mt-6 space-x-2">
+            <button
+              onClick={() => {
+                if (externalLogs) {
+                  setCurrentPage((prev) => Math.max(prev - 1, 0));
+                } else {
+                  fetchMyLogs(pagination.page - 1, pagination.size);
+                }
+              }}
+              disabled={
+                externalLogs ? currentPage === 0 : pagination.page === 0
+              }
+              className="px-3 py-1 rounded-md bg-lilac/30 text-purple hover:bg-lilac/50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
 
-          {Array.from(
-            { length: Math.min(5, pagination.totalPages) },
-            (_, i) => {
-              const pageNum = i + Math.max(0, pagination.page - 2);
-              if (pageNum >= pagination.totalPages) return null;
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const pageNum =
+                i +
+                Math.max(0, (externalLogs ? currentPage : pagination.page) - 2);
+              if (pageNum >= totalPages) return null;
 
               return (
                 <button
                   key={pageNum}
-                  onClick={() => fetchMyLogs(pageNum, pagination.size)}
+                  onClick={() => {
+                    if (externalLogs) {
+                      setCurrentPage(pageNum);
+                    } else {
+                      fetchMyLogs(pageNum, pagination.size);
+                    }
+                  }}
                   className={`px-3 py-1 rounded-md ${
-                    pagination.page === pageNum
+                    (externalLogs ? currentPage : pagination.page) === pageNum
                       ? "bg-purple text-offwhite"
                       : "bg-lilac/30 text-purple hover:bg-lilac/50"
                   }`}
@@ -383,18 +418,29 @@ export default function TableDashboard({
                   {pageNum + 1}
                 </button>
               );
-            }
-          )}
+            })}
 
-          <button
-            onClick={() => fetchMyLogs(pagination.page + 1, pagination.size)}
-            disabled={pagination.page >= pagination.totalPages - 1}
-            className="px-3 py-1 rounded-md bg-lilac/30 text-purple hover:bg-lilac/50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
-      )}
-    </div>
+            <button
+              onClick={() => {
+                if (externalLogs) {
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+                } else {
+                  fetchMyLogs(pagination.page + 1, pagination.size);
+                }
+              }}
+              disabled={
+                externalLogs
+                  ? currentPage >= totalPages - 1
+                  : pagination.page >= pagination.totalPages - 1
+              }
+              className="px-3 py-1 rounded-md bg-lilac/30 text-purple hover:bg-lilac/50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>{" "}
+      // ← This closing div was missing
+    </>
   );
 }
