@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { birdwatchinglogs } from "../api/birdwatchinglogs";
 import type { BirdwatchingLogReadOnlyDTO } from "../types/birdwatchingTypes";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { Button } from "../components/ui/button";
+import { useAuth } from "../hooks/useAuth";
 
 export default function LogDetailsPage() {
   const { id } = useParams();
+  const { userId: currentUserId } = useAuth();
   const navigate = useNavigate();
   const [log, setLog] = useState<BirdwatchingLogReadOnlyDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,21 +91,22 @@ export default function LogDetailsPage() {
     <>
       <div className="container mx-auto p-4 max-w-4xl">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-logo text-purple">Log Details</h1>
-          <div className="flex space-x-2">
-            <Link
-              to={`/logs/${log.id}/edit`}
-              className="bg-sage text-offwhite px-4 py-2 rounded-lg hover:bg-sage/80 transition-colors"
-            >
-              Edit Log
-            </Link>
-            <button
-              onClick={handleDelete}
-              className="bg-rose-600 text-offwhite px-4 py-2 rounded-lg hover:bg-rose-700 transition-colors"
-            >
-              Delete Log
-            </button>
-          </div>
+          <h1 className="text-xl md:text-3xl font-logo text-purple">
+            Log Details
+          </h1>
+          {log.user?.id === currentUserId && (
+            <div className="flex space-x-2">
+              <Button onClick={() => navigate(`/logs/${log.id}/edit`)}>
+                Edit Log
+              </Button>
+              <Button
+                onClick={handleDelete}
+                className="bg-rose-400 text-offwhite px-4 py-2 rounded-lg hover:bg-rose-700 transition-colors"
+              >
+                Delete Log
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
@@ -113,17 +117,22 @@ export default function LogDetailsPage() {
               </h2>
               <div className="space-y-3">
                 <p>
-                  <span className="font-semibold">Common Name:</span>{" "}
-                  {log.bird.name}
+                  <span className="font-sans font-semibold text-gray-700">
+                    Common Name:
+                  </span>
+                  <span className="text-sage"> {log.bird.name}</span>
                 </p>
                 <p>
-                  <span className="font-semibold">Scientific Name:</span>{" "}
-                  {log.bird.scientificName}
+                  <span className="font-sans font-semibold text-gray-700">
+                    Scientific Name:
+                  </span>
+                  <span className="text-sage"> {log.bird.scientificName} </span>
                 </p>
                 <p>
-                  <span className="font-semibold">Family:</span>{" "}
-                  <span className="font-semibold">Family:</span>{" "}
-                  {log.bird.family.name}
+                  <span className="font-sans font-semibold text-gray-700">
+                    Family:
+                  </span>
+                  <span className="text-sage"> {log.bird.family.name} </span>
                 </p>
               </div>
             </div>
@@ -134,30 +143,34 @@ export default function LogDetailsPage() {
               </h2>
               <div className="space-y-3">
                 <p>
-                  <span className="font-semibold">Location:</span>{" "}
-                  {log.region.name}
+                  <span className="font-sans font-semibold text-gray-700">
+                    Location:
+                  </span>
+                  <span className="text-sage"> {log.region.name} </span>
                 </p>
                 <p>
-                  <span className="font-semibold">Quantity:</span>{" "}
-                  {log.quantity}
+                  <span className="font-sans font-semibold text-gray-700">
+                    Quantity:
+                  </span>
+                  <span className="text-sage"> {log.quantity} </span>
                 </p>
                 <p>
-                  <span className="font-semibold">Date:</span>{" "}
-                  {new Date(log.createdAt).toLocaleDateString()}
+                  <span className="font-sans font-semibold text-gray-700">
+                    Date:
+                  </span>
+                  <span className="text-sage">
+                    {" "}
+                    {new Date(log.createdAt).toLocaleDateString()}
+                  </span>
                 </p>
                 <p>
-                  <span className="font-semibold">Observer:</span>{" "}
-                  {log.user.username}
+                  <span className="font-sans font-semibold text-gray-700">
+                    Spotter:
+                  </span>
+                  <span className="text-sage"> {log.user.username} </span>
                 </p>
               </div>
             </div>
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-purple/20">
-            <h2 className="text-xl font-semibold text-purple mb-4">
-              Additional Notes
-            </h2>
-            <p className="text-purple/80">No additional notes provided.</p>
           </div>
         </div>
       </div>

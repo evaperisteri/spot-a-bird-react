@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Eye, Pencil, Trash } from "lucide-react";
 import { birdwatchinglogs } from "../../api/birdwatchinglogs";
 import type { BirdwatchingLogTableItem } from "../../types/birdwatchingTypes";
+import { useAuth } from "../../hooks/useAuth";
 
 interface TableDashboardProps {
   logs?: BirdwatchingLogTableItem[];
@@ -15,6 +16,7 @@ export default function TableDashboard({
   showHeader = true,
   onLogsChange,
 }: TableDashboardProps) {
+  const { userId: currentUserId } = useAuth();
   const [internalLogs, setInternalLogs] = useState<BirdwatchingLogTableItem[]>(
     []
   );
@@ -193,20 +195,24 @@ export default function TableDashboard({
                   >
                     <Eye className="w-4 h-4 text-purple/70 hover:text-purple" />
                   </Link>
-                  <Link
-                    to={`/logs/${log.id}/edit`}
-                    className="p-1 hover:bg-lilac/30 rounded transition-colors"
-                    title="Edit log"
-                  >
-                    <Pencil className="w-4 h-4 text-purple/70 hover:text-sage" />
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(log.id)}
-                    className="p-1 hover:bg-lilac/30 rounded transition-colors"
-                    title="Delete log"
-                  >
-                    <Trash className="w-4 h-4 text-purple/70 hover:text-red-400" />
-                  </button>
+                  {log.user?.id === currentUserId && (
+                    <Link
+                      to={`/logs/${log.id}/edit`}
+                      className="p-1 hover:bg-lilac/30 rounded transition-colors"
+                      title="Edit log"
+                    >
+                      <Pencil className="w-4 h-4 text-purple/70 hover:text-sage" />
+                    </Link>
+                  )}
+                  {log.user?.id === currentUserId && (
+                    <button
+                      onClick={() => handleDelete(log.id)}
+                      className="p-1 hover:bg-lilac/30 rounded transition-colors"
+                      title="Delete log"
+                    >
+                      <Trash className="w-4 h-4 text-purple/70 hover:text-red-400" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
