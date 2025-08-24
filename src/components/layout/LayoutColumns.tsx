@@ -30,7 +30,7 @@ export default function Layout() {
               >
                 My logs
               </ButtonHome>
-              <ButtonHome type="button" to="/stats">
+              <ButtonHome type="button" to="/statistics">
                 Stats
               </ButtonHome>
               <ButtonHome type="button" to="/myinfo">
