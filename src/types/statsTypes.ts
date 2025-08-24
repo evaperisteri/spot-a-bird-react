@@ -20,9 +20,9 @@ export interface FamilyStatisticsDTO {
 }
 
 export interface FamilyCountDTO {
-  id: number;
+  familyId: number;
   familyName: string;
-  speciesCount: number;
+  birdCount: number;
   observationCount: number;
 }
 
