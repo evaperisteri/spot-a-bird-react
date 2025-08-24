@@ -9,6 +9,8 @@ import RegistrationPage from "./pages/RegistrationPage";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import NewLogPage from "./pages/NewLogPage";
+import EditLogPage from "./pages/EditLogPage";
+import LogDetailsPage from "./pages/LogDetailsPage";
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
             <Route path="/" element={<LayoutColumns />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/savelog" element={<NewLogPage />} />
+              <Route path="/logs/:id" element={<LogDetailsPage />} />
+              <Route path="/logs/:id/edit" element={<EditLogPage />} />
             </Route>
           </Route>
         </Routes>

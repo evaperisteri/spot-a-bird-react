@@ -12,7 +12,12 @@ export interface BirdReadOnlyDTO {
   id: number;
   name: string;
   scientificName: string;
-  family: string;
+  family: BirdFamilyDTO;
+}
+
+export interface BirdFamilyDTO {
+  id: number;
+  name: string;
 }
 
 export interface RegionReadOnlyDTO {

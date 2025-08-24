@@ -17,7 +17,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-20">
       <nav className="flex justify-between sm:px-6 lg:px-8">
         <Link
-          to="/"
+          to="/dashboard"
           className="flex items-center gap-4 hover:opacity-80 transition-opacity duration-200"
         >
           <img

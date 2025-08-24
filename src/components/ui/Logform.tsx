@@ -13,42 +13,69 @@ interface FormData {
   regionName: string;
 }
 
-export default function Logform() {
+export interface LogformProps {
+  initialData?: {
+    birdName: string;
+    regionName: string;
+    quantity: string;
+  };
+  onSubmit?: (formData: FormData) => void;
+  onCancel?: () => void;
+  isSubmitting?: boolean;
+  submitText?: string;
+}
+
+export default function Logform({
+  initialData,
+  onSubmit,
+  onCancel,
+  isSubmitting = false,
+  submitText = "Submit Sighting",
+}: LogformProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
-    birdName: "",
-    quantity: 1,
-    regionName: "",
+    birdName: initialData?.birdName || "",
+    quantity: initialData?.quantity ? parseInt(initialData.quantity) : 1,
+    regionName: initialData?.regionName || "",
   });
 
   const [regions, setRegions] = useState<Region[]>([]);
   const [selectedBird, setSelectedBird] = useState<Bird | null>(null);
 
   useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setFetchingData(true);
+        setError(null);
+
+        const regionsData = await regionsService.getAllRegions();
+        const safeRegionsData = Array.isArray(regionsData) ? regionsData : [];
+
+        setRegions(safeRegionsData);
+
+        // If we have initial data, pre-select the bird
+        if (initialData?.birdName) {
+          setSelectedBird({
+            id: 0,
+            commonName: initialData.birdName,
+            scientificName: "",
+            familyName: "",
+          });
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching data:", error);
+        setError("Failed to load form data. Please try again.");
+      } finally {
+        setFetchingData(false);
+      }
+    };
+
     fetchInitialData();
-  }, []);
-
-  const fetchInitialData = async () => {
-    console.log("fetching initial data");
-    try {
-      setFetchingData(true);
-      setError(null);
-
-      const regionsData = await regionsService.getAllRegions();
-      const safeRegionsData = Array.isArray(regionsData) ? regionsData : [];
-
-      setRegions(safeRegionsData);
-    } catch (error: unknown) {
-      console.error("Error fetching data:", error);
-      setError("Failed to load form data. Please try again.");
-    } finally {
-      setFetchingData(false);
-    }
-  };
+  }, [initialData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -62,6 +89,14 @@ export default function Logform() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Use custom onSubmit if provided, otherwise use default behavior
+    if (onSubmit) {
+      onSubmit(formData);
+      return;
+    }
+
+    // Default behavior (create new log)
     setLoading(true);
     setError(null);
 
@@ -79,10 +114,7 @@ export default function Logform() {
         regionName: formData.regionName,
       };
 
-      console.log("Submitting log data:", logData);
-
-      const savedLog = await birdwatchinglogs.createLog(logData);
-      console.log("Log saved successfully:", savedLog);
+      await birdwatchinglogs.createLog(logData);
       navigate("/dashboard", {
         state: { message: "Log created successfully!" },
       });
@@ -156,28 +188,6 @@ export default function Logform() {
           >
             Region of Greece *
           </label>
-          {/* <select
-            id="regionName"
-            name="regionName"
-            value={formData.regionName}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans"
-          >
-            <option value="">Select a region in Greece</option>
-            
-            {Array.isArray(regions) && regions.length > 0 ? (
-              regions.map((region) => (
-                <option key={region.id} value={region.name}>
-                  {region.name}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                No regions found
-              </option>
-            )}
-          </select> */}
           <div className="relative">
             <select
               id="regionName"
@@ -185,7 +195,7 @@ export default function Logform() {
               value={formData.regionName}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans appearance-none" // Added appearance-none
+              className="w-full px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans appearance-none"
             >
               <option value="">Select a region in Greece</option>
               {Array.isArray(regions) && regions.length > 0 ? (
@@ -200,20 +210,28 @@ export default function Logform() {
                 </option>
               )}
             </select>
-            {/* Chevron icon */}
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
               <ChevronsUpDownIcon className="h-5 w-5 text-purple/70" />
             </div>
           </div>
         </div>
 
-        <div className="pt-4">
+        <div className="pt-4 flex space-x-4">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="bg-gray-500 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 text-lg font-sans font-semibold"
+            >
+              Cancel
+            </button>
+          )}
           <button
             type="submit"
-            disabled={loading}
-            className="block w-full bg-purple/80 hover:bg-purple/60 disabled:bg-purple/40 text-offwhite font-sans font-bold tracking-wide py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg"
+            disabled={loading || isSubmitting}
+            className="flex-1 bg-purple/80 hover:bg-purple/60 disabled:bg-purple/40 text-offwhite font-sans font-bold tracking-wide py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg"
           >
-            {loading ? "Submitting..." : "Submit Sighting"}
+            {loading || isSubmitting ? "Processing..." : submitText}
           </button>
         </div>
       </form>

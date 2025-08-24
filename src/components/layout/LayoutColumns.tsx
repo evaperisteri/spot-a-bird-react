@@ -18,7 +18,18 @@ export default function Layout() {
                 <ButtonHome type="button" to="/savelog">
                   New Log
                 </ButtonHome>
-                <ButtonHome type="button" to="/mylogs">
+                <ButtonHome
+                  type="button"
+                  to="/dashboard?showMyLogs=true"
+                  onClick={(e) => {
+                    // If we're already on dashboard, handle the toggle
+                    if (window.location.pathname === "/dashboard") {
+                      e.preventDefault();
+                      // You'd need to pass a function to toggle the state
+                      // This requires a more complex solution with context or state management
+                    }
+                  }}
+                >
                   My logs
                 </ButtonHome>
                 <ButtonHome type="button" to="/stats">

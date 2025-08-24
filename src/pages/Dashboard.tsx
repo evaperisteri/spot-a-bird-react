@@ -5,9 +5,11 @@ import type {
   BirdwatchingLogTableItem,
   BirdwatchingLogReadOnlyDTO,
 } from "../types/birdwatchingTypes";
-import { Search } from "lucide-react";
+import { Search, User } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { useSearchParams } from "react-router-dom";
 
-// Mapping function
+// Mapping function for API responses that return BirdwatchingLogReadOnlyDTO
 const mapLogDTOtoTableItem = (
   dto: BirdwatchingLogReadOnlyDTO
 ): BirdwatchingLogTableItem => ({
@@ -21,28 +23,57 @@ const mapLogDTOtoTableItem = (
 });
 
 export default function Dashboard() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { isAuthenticated, userId, username } = useAuth(); // Destructure directly from useAuth()
+
   const [searchTerm, setSearchTerm] = useState("");
   const [allLogs, setAllLogs] = useState<BirdwatchingLogTableItem[]>([]);
+  const [myLogs, setMyLogs] = useState<BirdwatchingLogTableItem[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<BirdwatchingLogTableItem[]>(
     []
   );
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showOnlyMyLogs, setShowOnlyMyLogs] = useState(false);
+
+  useEffect(() => {
+    const showMyLogsParam = searchParams.get("showMyLogs");
+    if (showMyLogsParam === "true") {
+      setShowOnlyMyLogs(true);
+    }
+  }, [searchParams]);
 
   // Fetch all logs on mount
   useEffect(() => {
     const fetchLogs = async () => {
       try {
         setIsLoading(true);
-        const response = await birdwatchinglogs.getPaginatedLogs(
+
+        // Fetch all logs - this returns BirdwatchingLogReadOnlyDTO[]
+        const allLogsResponse = await birdwatchinglogs.getPaginatedLogs(
           0,
-          1000, // Increased to get more logs
+          1000,
           "createdAt",
           "DESC"
         );
-        const mappedLogs = (response.content || []).map(mapLogDTOtoTableItem);
-        setAllLogs(mappedLogs);
+        const mappedAllLogs = (allLogsResponse.content || []).map(
+          mapLogDTOtoTableItem
+        );
+        setAllLogs(mappedAllLogs);
+
+        // Fetch current user's logs if user is authenticated
+        // This returns BirdwatchingLogTableItem[] directly, no mapping needed
+        if (isAuthenticated && userId) {
+          const myLogsResponse = await birdwatchinglogs.getMyLogsPaginated(
+            0,
+            1000,
+            "createdAt",
+            "DESC"
+          );
+          // No mapping needed since getMyLogsPaginated already returns BirdwatchingLogTableItem[]
+          setMyLogs(myLogsResponse.content || []);
+        }
       } catch (err) {
         console.error("Failed to fetch logs:", err);
         setError("Could not load logs.");
@@ -52,7 +83,7 @@ export default function Dashboard() {
     };
 
     fetchLogs();
-  }, []);
+  }, [isAuthenticated, userId]);
 
   // Client-side filtering using useMemo for performance
   const clientFilteredLogs = useMemo(() => {
@@ -61,14 +92,16 @@ export default function Dashboard() {
     }
 
     const term = searchTerm.toLowerCase().trim();
-    return allLogs.filter(
+    const logsToSearch = showOnlyMyLogs ? myLogs : allLogs;
+
+    return logsToSearch.filter(
       (log) =>
         log.commonName.toLowerCase().includes(term) ||
         log.scientificName.toLowerCase().includes(term) ||
         log.regionName.toLowerCase().includes(term) ||
         log.user?.username.toLowerCase().includes(term)
     );
-  }, [searchTerm, allLogs]);
+  }, [searchTerm, allLogs, myLogs, showOnlyMyLogs]);
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
@@ -84,19 +117,31 @@ export default function Dashboard() {
       // Try server-side search first
       const response = await birdwatchinglogs.searchLogs(
         searchTerm.trim(),
-        0, // page
-        50, // size
-        "createdAt", // sortBy
-        "DESC" // sortDirection
+        0,
+        50,
+        "createdAt",
+        "DESC"
       );
 
+      // Check what type searchLogs returns and map accordingly
+      // If it returns BirdwatchingLogReadOnlyDTO[], use mapLogDTOtoTableItem
+      // If it returns BirdwatchingLogTableItem[], use identityMapper
       const mappedLogs = (response.content || []).map(mapLogDTOtoTableItem);
-      setFilteredLogs(mappedLogs);
+
+      // Filter by user if "Show My Logs" is enabled
+      let finalFilteredLogs = mappedLogs;
+      if (showOnlyMyLogs && username) {
+        finalFilteredLogs = mappedLogs.filter(
+          (log) => log.user?.username === username
+        );
+      }
+
+      setFilteredLogs(finalFilteredLogs);
       setIsSearching(true);
     } catch (err) {
       console.error("Server search error, falling back to client search:", err);
 
-      // Fall back to client-side search if server search fails
+      // Fall back to client-side search
       setFilteredLogs(clientFilteredLogs);
       setIsSearching(true);
     } finally {
@@ -117,8 +162,32 @@ export default function Dashboard() {
     setError(null);
   };
 
+  const toggleMyLogs = () => {
+    const newShowOnlyMyLogs = !showOnlyMyLogs;
+    setShowOnlyMyLogs(newShowOnlyMyLogs);
+
+    // Update URL parameter
+    if (newShowOnlyMyLogs) {
+      searchParams.set("showMyLogs", "true");
+    } else {
+      searchParams.delete("showMyLogs");
+    }
+    setSearchParams(searchParams);
+
+    // Clear search when toggling
+    if (isSearching) {
+      setSearchTerm("");
+      setFilteredLogs([]);
+      setIsSearching(false);
+    }
+  };
+
   // Determine which logs to display
-  const logsToDisplay = isSearching ? filteredLogs : allLogs;
+  const logsToDisplay = isSearching
+    ? filteredLogs
+    : showOnlyMyLogs
+    ? myLogs
+    : allLogs;
 
   return (
     <>
@@ -167,6 +236,30 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Toggle My Logs Button */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={toggleMyLogs}
+            disabled={!isAuthenticated} // Disable if user not logged in
+            className={`px-4 py-2 rounded-lg font-sans font-semibold transition duration-200 shadow-md flex items-center gap-2 ${
+              showOnlyMyLogs
+                ? "bg-sage text-offwhite hover:bg-sage/80"
+                : "bg-lilac/40 text-purple hover:bg-lilac/60"
+            } ${!isAuthenticated ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            <User className="w-4 h-4" />
+            {showOnlyMyLogs ? "Show All Logs" : "Show My Logs"}
+          </button>
+
+          {showOnlyMyLogs && (
+            <span className="text-purple/70 font-sans">
+              Showing only your logs ({myLogs.length})
+            </span>
+          )}
+        </div>
+      </div>
+
       {error && (
         <div className="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded mb-4">
           {error}
@@ -178,8 +271,18 @@ export default function Dashboard() {
           <h2 className="font-logo text-purple text-2xl">
             {isSearching
               ? `Search Results (${logsToDisplay.length})`
+              : showOnlyMyLogs
+              ? "My Recent Sightings"
               : "All Recent Sightings"}
           </h2>
+
+          {!isSearching && (
+            <span className="text-purple/70 font-sans">
+              {showOnlyMyLogs
+                ? `${myLogs.length} of your logs`
+                : `${allLogs.length} total logs`}
+            </span>
+          )}
 
           {isSearching && logsToDisplay.length > 0 && (
             <span className="text-purple/70 font-sans">
