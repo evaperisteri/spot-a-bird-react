@@ -297,7 +297,7 @@ export default function Dashboard() {
             <p className="mt-4 text-purple/70">Loading logs...</p>
           </div>
         ) : (
-          <TableDashboard showHeader={true} />
+          <TableDashboard logs={logsToDisplay} showHeader={true} />
         )}
       </div>
     </>

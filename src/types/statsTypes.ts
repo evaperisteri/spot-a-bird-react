@@ -32,6 +32,7 @@ export interface RegionCountDTO {
 }
 
 export interface BirdCountDTO {
+  birdId: number;
   birdName: string;
   observationCount: number;
 }

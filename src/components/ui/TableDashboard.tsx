@@ -30,7 +30,12 @@ export default function TableDashboard({
   });
   const [sortLoading, setSortLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState({
-    sortBy: "createdAt" as "createdAt" | "birdName" | "regionName",
+    sortBy: "createdAt" as
+      | "createdAt"
+      | "birdName"
+      | "regionName"
+      | "scientificName"
+      | "spotter",
     sortDirection: "DESC" as "ASC" | "DESC",
   });
 
@@ -52,8 +57,17 @@ export default function TableDashboard({
         case "birdName":
           return a.commonName.localeCompare(b.commonName) * direction;
 
+        case "scientificName":
+          return a.scientificName.localeCompare(b.scientificName) * direction;
+
         case "regionName":
           return a.regionName.localeCompare(b.regionName) * direction;
+
+        case "spotter":
+          return (
+            (a.user?.username || "").localeCompare(b.user?.username || "") *
+            direction
+          );
 
         default:
           return 0;
@@ -68,12 +82,31 @@ export default function TableDashboard({
       try {
         setLoading(true);
         setError(null);
+
+        // Map frontend field names to backend field names if needed
+        const backendSortBy =
+          sortConfig.sortBy === "birdName"
+            ? "bird.name"
+            : sortConfig.sortBy === "scientificName"
+            ? "bird.scientificName"
+            : sortConfig.sortBy === "spotter"
+            ? "user.username"
+            : sortConfig.sortBy;
+        console.log("Sending to backend:", {
+          sortBy: backendSortBy,
+          sortDirection: sortConfig.sortDirection,
+          page,
+          size,
+        });
+
         const data = await birdwatchinglogs.getMyLogsPaginated(
           page,
           size,
-          sortConfig.sortBy,
+          backendSortBy,
           sortConfig.sortDirection
         );
+        console.log("Received from backend:", data);
+
         setInternalLogs(data.content || []);
         setPagination({
           page: data.number ?? page,
@@ -93,7 +126,14 @@ export default function TableDashboard({
     [onLogsChange, sortConfig]
   );
 
-  const handleSort = async (field: "createdAt" | "birdName" | "regionName") => {
+  const handleSort = async (
+    field:
+      | "createdAt"
+      | "birdName"
+      | "regionName"
+      | "scientificName"
+      | "spotter"
+  ) => {
     setSortLoading(true);
     setSortConfig((prev) => ({
       sortBy: field,
@@ -187,6 +227,7 @@ export default function TableDashboard({
         <table className="w-full border-collapse">
           <thead className="bg-purple/10">
             <tr className="border-b-2 border-purple/30">
+              {/* Common Name - Already sortable */}
               <th
                 className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                 onClick={() => handleSort("birdName")}
@@ -195,9 +236,18 @@ export default function TableDashboard({
                 {sortConfig.sortBy === "birdName" &&
                   (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
               </th>
-              <th className="p-3 text-left font-sans font-semibold text-purple">
-                Scientific Name
+
+              {/* Scientific Name - Make sortable */}
+              <th
+                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                onClick={() => handleSort("scientificName")}
+              >
+                Scientific Name{" "}
+                {sortConfig.sortBy === "scientificName" &&
+                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
               </th>
+
+              {/* Location - Already sortable */}
               <th
                 className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                 onClick={() => handleSort("regionName")}
@@ -206,12 +256,23 @@ export default function TableDashboard({
                 {sortConfig.sortBy === "regionName" &&
                   (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
               </th>
+
+              {/* Quantity - Keep as is (not sortable) */}
               <th className="p-3 text-left font-sans font-semibold text-purple">
                 Quantity
               </th>
-              <th className="p-3 text-left font-sans font-semibold text-purple">
-                Spotter
+
+              {/* Spotter - Make sortable */}
+              <th
+                className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
+                onClick={() => handleSort("spotter")}
+              >
+                Spotter{" "}
+                {sortConfig.sortBy === "spotter" &&
+                  (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
               </th>
+
+              {/* Date - Already sortable */}
               <th
                 className="p-3 text-left font-sans font-semibold text-purple cursor-pointer hover:bg-purple/20"
                 onClick={() => handleSort("createdAt")}
@@ -229,6 +290,7 @@ export default function TableDashboard({
                   </>
                 )}
               </th>
+
               <th className="p-3 text-center font-sans font-semibold text-purple">
                 Actions
               </th>

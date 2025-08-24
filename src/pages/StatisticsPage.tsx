@@ -51,7 +51,6 @@ export default function StatisticsPage() {
     return (
       <div className="text-center p-8">
         <LoadingSpinner />
-        <p className="mt-4 text-purple/70">Loading statistics...</p>
       </div>
     );
   }
@@ -75,7 +74,7 @@ export default function StatisticsPage() {
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-logo text-purple mb-6">Statistics</h1>
         <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 font-logo">
             {/* Total Species Card */}
             <div className="bg-lilac/30 rounded-lg p-4 text-center">
               <Bird className="w-8 h-8 text-purple mx-auto mb-2" />
@@ -137,23 +136,23 @@ export default function StatisticsPage() {
               </div>
             </div>
 
-            {/* Top Families */}
+            {/* Top Birds */}
             <div className="bg-white rounded-lg p-4 shadow-md">
               <h3 className="font-semibold text-purple mb-4 flex items-center">
-                <Users className="w-5 h-5 mr-2" />
-                Top Bird Families
+                <Binoculars className="w-5 h-5 mr-2" />
+                Most Spotted Birds
               </h3>
               <div className="space-y-2">
-                {birdStats?.topFamilies?.slice(0, 5).map((family, index) => (
+                {userStats?.mostSpottedBirds?.slice(0, 5).map((bird, index) => (
                   <div
-                    key={family.familyId}
+                    key={bird.birdId}
                     className="flex justify-between items-center"
                   >
                     <span className="text-purple">
-                      {index + 1}. {family.familyName}
+                      {index + 1}. {bird.birdName}
                     </span>
-                    <span className="bg-purple text-offwhite px-2 py-1 rounded text-sm">
-                      {family.birdCount} species {/* ← Use birdCount */}
+                    <span className="bg-sage text-offwhite px-2 py-1 rounded text-sm">
+                      {bird.observationCount} sightings
                     </span>
                   </div>
                 ))}
@@ -190,50 +189,55 @@ export default function StatisticsPage() {
               </div>
             </div>
           )}
-          {/* Families with Most Species */}
-          <div>
-            <h4 className="text-purple/70 mb-2">Families with Most Species</h4>
-            <div className="space-y-1">
-              {familyStats?.familiesWithMostSpecies
-                ?.slice(0, 5)
-                .map((family, index) => (
-                  <div
-                    key={family.familyId}
-                    className="flex justify-between items-center text-sm"
-                  >
-                    <span className="text-purple">
-                      {index + 1}. {family.familyName}
-                    </span>
-                    <span className="bg-purple text-offwhite px-2 py-1 rounded text-xs">
-                      {family.birdCount} species {/* ← Use birdCount */}
-                    </span>
-                  </div>
-                ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            {/* Families with Most Species */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <h3 className="font-semibold text-purple mb-4 flex items-center">
+                <Bird className="w-5 h-5 mr-2" />
+                Families with Most Species
+              </h3>
+              <div className="space-y-2">
+                {familyStats?.familiesWithMostSpecies
+                  ?.slice(0, 5)
+                  .map((family, index) => (
+                    <div
+                      key={family.familyId}
+                      className="flex justify-between items-center text-sm"
+                    >
+                      <span className="text-purple">
+                        {index + 1}. {family.familyName}
+                      </span>
+                      <span className="bg-purple text-offwhite px-2 py-1 rounded text-xs">
+                        {family.birdCount} species
+                      </span>
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
 
-          {/* Families with Most Observations */}
-          <div>
-            <h4 className="text-purple/70 mb-2">
-              Families with Most Observations
-            </h4>
-            <div className="space-y-1">
-              {familyStats?.familiesWithMostObservations
-                ?.slice(0, 5)
-                .map((family, index) => (
-                  <div
-                    key={family.familyId}
-                    className="flex justify-between items-center text-sm"
-                  >
-                    <span className="text-purple">
-                      {index + 1}. {family.familyName}
-                    </span>
-                    <span className="bg-sage text-offwhite px-2 py-1 rounded text-xs">
-                      {family.observationCount} observations{" "}
-                      {/* ← observationCount is correct */}
-                    </span>
-                  </div>
-                ))}
+            {/* Families with Most Observations */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <h3 className="font-semibold text-purple mb-4 flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2" />
+                Families with Most Observations
+              </h3>
+              <div className="space-y-2">
+                {familyStats?.familiesWithMostObservations
+                  ?.slice(0, 5)
+                  .map((family, index) => (
+                    <div
+                      key={family.familyId}
+                      className="flex justify-between items-center text-sm"
+                    >
+                      <span className="text-purple">
+                        {index + 1}. {family.familyName}
+                      </span>
+                      <span className="bg-sage text-offwhite px-2 py-1 rounded text-xs">
+                        {family.observationCount} spottings
+                      </span>
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
         </div>
