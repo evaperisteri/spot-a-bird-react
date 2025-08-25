@@ -12,6 +12,8 @@ import NewLogPage from "./pages/NewLogPage";
 import EditLogPage from "./pages/EditLogPage";
 import LogDetailsPage from "./pages/LogDetailsPage";
 import StatisticsPage from "./pages/StatisticsPage";
+import ProfileDetailsPage from "./pages/ProfileDetailsPage";
+import BirdsCatalogPage from "./pages/BirdsCatalogPage";
 
 export default function App() {
   return (
@@ -34,6 +36,8 @@ export default function App() {
               <Route path="/logs/:id" element={<LogDetailsPage />} />
               <Route path="/logs/:id/edit" element={<EditLogPage />} />
               <Route path="/statistics" element={<StatisticsPage />} />
+              <Route path="/myinfo" element={<ProfileDetailsPage />} />
+              <Route path="/birds" element={<BirdsCatalogPage />} />
             </Route>
           </Route>
         </Routes>

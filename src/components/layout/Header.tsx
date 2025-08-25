@@ -32,7 +32,7 @@ export default function Header() {
         {isAuthenticated && (
           <div className="flex items-center">
             <Link
-              to="./user-profile"
+              to="/myinfo"
               className="decoration-none font-semibold tracking-wider underline text-purple hover:text-purple/80 transition"
             >
               {firstname && lastname ? `${firstname} ${lastname}` : username}
