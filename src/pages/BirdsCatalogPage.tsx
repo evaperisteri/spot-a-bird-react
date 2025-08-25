@@ -1,18 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { authFetch } from "../api/client";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { Search, Bird, ChevronLeft, ChevronRight } from "lucide-react";
-// import { useAuth } from "../hooks/useAuth";
+import { Search, Bird, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface BirdFullDetailsDTO {
   id: number;
-  name: string;
-  commonName?: string;
-  common_name?: string;
+  commonName: string;
   scientificName: string;
-  scientific_name?: string;
   familyName: string;
-  family_name?: string;
+  imageUrl?: string;
+  displayText?: string;
+  searchableText?: string;
 }
 
 interface PaginatedResponse<T> {
@@ -24,7 +23,6 @@ interface PaginatedResponse<T> {
 }
 
 export default function BirdsCatalogPage() {
-  // const { isAuthenticated } = useAuth();
   const [birds, setBirds] = useState<BirdFullDetailsDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -38,23 +36,10 @@ export default function BirdsCatalogPage() {
     totalElements: 0,
   });
   const [sortConfig, setSortConfig] = useState({
-    sortBy: "name" as "name" | "scientificName" | "familyName",
+    sortBy: "commonName" as "commonName" | "scientificName" | "familyName",
     sortDirection: "ASC" as "ASC" | "DESC",
   });
-
-  // Helper function to get field value regardless of naming convention
-  const getFieldValue = (bird: BirdFullDetailsDTO, field: string): string => {
-    switch (field) {
-      case "name":
-        return bird.commonName || bird.common_name || bird.name || "";
-      case "scientificName":
-        return bird.scientific_name || bird.scientificName || "";
-      case "familyName":
-        return bird.family_name || bird.familyName || "";
-      default:
-        return "";
-    }
-  };
+  const navigate = useNavigate();
 
   // Fetch birds with pagination and sorting
   const fetchBirds = useCallback(
@@ -81,12 +66,11 @@ export default function BirdsCatalogPage() {
             const errorData = await response.json();
             if (errorData.code === "userNotAuthenticated") {
               setAuthError("Please log in to access bird data");
-              // Continue processing as the data might still be returned
             }
           }
 
           const searchResults = await response.json();
-          console.log("Search API response:", searchResults); // Debug log
+          console.log("Search API response:", searchResults);
 
           setBirds(searchResults);
           setPagination((prev) => ({
@@ -105,13 +89,12 @@ export default function BirdsCatalogPage() {
             const errorData = await response.json();
             if (errorData.code === "userNotAuthenticated") {
               setAuthError("Please log in to access bird data");
-              // Continue processing as the data might still be returned
             }
           }
 
           const paginatedResponse: PaginatedResponse<BirdFullDetailsDTO> =
             await response.json();
-          console.log("Birds API response:", paginatedResponse); // Debug log
+          console.log("Birds API response:", paginatedResponse);
 
           setBirds(paginatedResponse.content);
           setPagination((prev) => ({
@@ -154,7 +137,9 @@ export default function BirdsCatalogPage() {
     fetchBirds(0);
   };
 
-  const handleSort = (field: "name" | "scientificName" | "familyName") => {
+  const handleSort = (
+    field: "commonName" | "scientificName" | "familyName"
+  ) => {
     const newDirection =
       sortConfig.sortBy === field && sortConfig.sortDirection === "ASC"
         ? "DESC"
@@ -163,8 +148,8 @@ export default function BirdsCatalogPage() {
 
     // Sort client-side since we have all data
     const sortedBirds = [...birds].sort((a, b) => {
-      const aValue = getFieldValue(a, field).toLowerCase();
-      const bValue = getFieldValue(b, field).toLowerCase();
+      const aValue = a[field].toLowerCase();
+      const bValue = b[field].toLowerCase();
 
       if (newDirection === "ASC") {
         return aValue.localeCompare(bValue);
@@ -289,16 +274,16 @@ export default function BirdsCatalogPage() {
         </div>
 
         {/* Birds Table */}
-        <div className="overflow-x-autorounded-lg shadow-md border border-offwhite rounded-lg">
+        <div className="overflow-x-auto rounded-lg shadow-md border border-offwhite">
           <table className="w-full ">
             <thead className="bg-sage text-white font-semibold font-md ">
               <tr>
                 <th
                   className="px-6 py-3 text-left cursor-pointer hover:bg-sage/80"
-                  onClick={() => handleSort("name")}
+                  onClick={() => handleSort("commonName")}
                 >
                   Common Name{" "}
-                  {sortConfig.sortBy === "name" &&
+                  {sortConfig.sortBy === "commonName" &&
                     (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
                 </th>
                 <th
@@ -317,6 +302,7 @@ export default function BirdsCatalogPage() {
                   {sortConfig.sortBy === "familyName" &&
                     (sortConfig.sortDirection === "ASC" ? "↑" : "↓")}
                 </th>
+                <th className="px-6 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className=" divide-y divide-gray-200">
@@ -326,13 +312,23 @@ export default function BirdsCatalogPage() {
                   className="hover:bg-lilac/20 transition-colors"
                 >
                   <td className="px-6 py-4 text-sm font-semibold text-purple/90">
-                    {getFieldValue(bird, "name")}
+                    {bird.commonName}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 italic">
-                    {getFieldValue(bird, "scientificName")}
+                    {bird.scientificName}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {getFieldValue(bird, "familyName")}
+                    {bird.familyName}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <button
+                      onClick={() =>
+                        navigate(`/birds/${bird.id}`, { state: bird })
+                      }
+                      className="p-2 rounded-lg hover:bg-sage/20"
+                    >
+                      <Eye className="w-5 h-5 text-sage" />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -359,18 +355,24 @@ export default function BirdsCatalogPage() {
             </button>
 
             <div className="flex space-x-1">
-              {Array.from(
-                { length: Math.min(5, pagination.totalPages) },
-                (_, i) => {
-                  // Show pages around current page
-                  let pageNum = pagination.page - 2 + i;
-                  if (pageNum < 0) pageNum = i;
-                  if (pageNum >= pagination.totalPages)
-                    pageNum = pagination.totalPages - 5 + i;
+              {(() => {
+                const total = pagination.totalPages;
+                const current = pagination.page;
+                const maxButtons = 5;
 
+                let start = Math.max(0, current - Math.floor(maxButtons / 2));
+                let end = start + maxButtons;
+
+                if (end > total) {
+                  end = total;
+                  start = Math.max(0, end - maxButtons);
+                }
+
+                return Array.from({ length: end - start }, (_, i) => {
+                  const pageNum = start + i;
                   return (
                     <button
-                      key={pageNum}
+                      key={`page-${pageNum}`}
                       onClick={() => handlePageChange(pageNum)}
                       className={`px-3 py-1 rounded-lg ${
                         pagination.page === pageNum
@@ -381,8 +383,8 @@ export default function BirdsCatalogPage() {
                       {pageNum + 1}
                     </button>
                   );
-                }
-              )}
+                });
+              })()}
             </div>
 
             <button
