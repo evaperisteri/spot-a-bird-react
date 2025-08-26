@@ -185,3 +185,21 @@ select:focus {
   border-color: #5a4060; /* purple */
   box-shadow: 0 0 0 1px #5a4060;
 }
+
+@keyframes gentle-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.logo-animation {
+  animation: gentle-pulse 3s ease-in-out;
+}
+
+.hover-glow:hover {
+  filter: drop-shadow(0 0 8px rgba(123, 143, 110, 0.6));
+}
