@@ -86,17 +86,8 @@ export default function BirdDetails() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-3xl">
-      {/* Back button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center text-sage mb-6 hover:underline"
-      >
-        <ChevronLeft className="w-5 h-5 mr-2" />
-        Back to Catalog
-      </button>
-
-      <div className="bg-offwhite p-6 rounded-2xl shadow-md border border-purple">
+    <div className="container mx-auto max-w-3xl">
+      <div className=" rounded-2xl shadow-md border border-purple p-4">
         <h1 className="text-3xl font-bold text-purple mb-4">
           {bird.commonName}
         </h1>
@@ -109,11 +100,11 @@ export default function BirdDetails() {
         </p>
 
         {bird.imageUrl && (
-          <div className="rounded-lg overflow-hidden border shadow-md flex justify-center items-center bg-offwhite mb-6">
+          <div className="rounded-lg overflow-hidden border shadow-md flex justify-center items-center bg-offwhite/60 p-1">
             <img
               src={bird.imageUrl}
               alt={bird.commonName}
-              className="max-h-80 w-auto object-scale-down"
+              className="max-h-60 w-auto object-scale-down rounded-lg"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = "/bird-placeholder.jpg";
@@ -142,6 +133,14 @@ export default function BirdDetails() {
             <ChevronRight className="w-5 h-5 ml-2" />
           </button>
         </div>
+        {/* Back button */}
+        <button
+          onClick={() => navigate("/birds")}
+          className="flex items-center text-sage m-2 hover:underline mx-auto"
+        >
+          <ChevronLeft className="w-5 h-5 mr-2" />
+          Back to Catalog
+        </button>
       </div>
     </div>
   );

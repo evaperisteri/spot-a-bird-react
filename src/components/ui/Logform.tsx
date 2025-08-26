@@ -57,7 +57,6 @@ export default function Logform({
 
         setRegions(safeRegionsData);
 
-        // If we have initial data, pre-select the bird
         if (initialData?.birdName) {
           setSelectedBird({
             id: 0,
@@ -90,11 +89,9 @@ export default function Logform({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Default behavior (create new log)
     setLoading(true);
     setError(null);
 
-    // Validate form
     if (!selectedBird || !formData.regionName) {
       setError("Please select both a bird species and a region");
       setLoading(false);
@@ -138,14 +135,14 @@ export default function Logform({
   }
 
   return (
-    <div>
+    <div className="w-full">
       {error && (
-        <div className="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded mb-4 mx-4 lg:mx-20">
+        <div className="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded mb-4 mx-2 md:mx-4 lg:mx-0">
           <div className="flex justify-between items-center">
-            <span>{error}</span>
+            <span className="text-sm md:text-base">{error}</span>
             <button
               onClick={() => setError(null)}
-              className="text-rose-800 hover:text-rose-900 font-bold"
+              className="text-rose-800 hover:text-rose-900 font-bold text-lg"
             >
               ×
             </button>
@@ -153,18 +150,26 @@ export default function Logform({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 px-4 md:px-6">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 md:space-y-6 px-2 md:px-4 lg:px-6"
+      >
+        {/* Bird Search */}
         <div>
-          <label className="block text-left text-sage font-semibold mb-2 text-lg">
+          <label className="block text-left text-sage font-semibold mb-2 text-base md:text-lg">
             Search Bird Species *
           </label>
           <BirdSearchComboBox value={selectedBird} onSelect={setSelectedBird} />
+          <p className="text-gray-600 text-xs md:text-sm font-sans text-end mt-1">
+            -- Click on the arrows for a random species selection! --
+          </p>
         </div>
 
+        {/* Quantity Input */}
         <div>
           <label
             htmlFor="quantity"
-            className="block text-left text-sage font-semibold mb-2 text-lg"
+            className="block text-left text-sage font-semibold mb-2 text-base md:text-lg"
           >
             Quantity *
           </label>
@@ -176,14 +181,15 @@ export default function Logform({
             value={formData.quantity}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans"
+            className="w-full px-3 md:px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans text-sm md:text-base"
           />
         </div>
 
+        {/* Region Select */}
         <div>
           <label
             htmlFor="regionName"
-            className="block text-left text-sage font-semibold mb-2 text-lg"
+            className="block text-left text-sage font-semibold mb-2 text-base md:text-lg"
           >
             Region of Greece *
           </label>
@@ -194,7 +200,7 @@ export default function Logform({
               value={formData.regionName}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans appearance-none"
+              className="w-full px-3 md:px-4 py-2 rounded-lg border-2 border-lilac focus:border-purple focus:ring-purple text-purple bg-offwhite font-sans text-sm md:text-base appearance-none"
             >
               <option value="">Select a region in Greece</option>
               {Array.isArray(regions) && regions.length > 0 ? (
@@ -210,17 +216,18 @@ export default function Logform({
               )}
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <ChevronsUpDownIcon className="h-5 w-5 text-purple/70" />
+              <ChevronsUpDownIcon className="h-4 w-4 md:h-5 md:w-5 text-purple/70" />
             </div>
           </div>
         </div>
 
-        <div className="pt-4 flex space-x-4">
+        {/* Action Buttons */}
+        <div className="pt-4 flex flex-col sm:flex-row gap-3 sm:space-x-4">
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
-              className="bg-gray-500 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 text-lg font-sans font-semibold"
+              className="bg-gray-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg shadow-md transition duration-200 text-base md:text-lg font-sans font-semibold flex-1 sm:flex-none order-2 sm:order-1"
             >
               Cancel
             </button>
@@ -228,9 +235,16 @@ export default function Logform({
           <button
             type="submit"
             disabled={loading || isSubmitting}
-            className="flex-1 bg-purple/80 hover:bg-purple/60 disabled:bg-purple/40 text-offwhite font-sans font-bold tracking-wide py-3 px-4 rounded-lg shadow-md transition duration-200 text-lg"
+            className="bg-purple/80 hover:bg-purple/60 disabled:bg-purple/40 text-offwhite font-sans font-bold tracking-wide py-2 md:py-3 px-4 rounded-lg shadow-md transition duration-200 text-base md:text-lg flex-1 order-1 sm:order-2"
           >
-            {loading || isSubmitting ? "Processing..." : submitText}
+            {loading || isSubmitting ? (
+              <span className="flex items-center justify-center">
+                <LoadingSpinner />
+                Processing...
+              </span>
+            ) : (
+              submitText
+            )}
           </button>
         </div>
       </form>

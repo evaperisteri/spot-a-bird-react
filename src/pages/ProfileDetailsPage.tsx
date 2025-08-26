@@ -111,154 +111,158 @@ export default function ProfileDetailsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <div className="text-center rounded-xl shadow-soft text-purple border border-purple md:p-10 m-4">
-        <div className="bg-offwhite overflow-auto shadow-soft rounded-lg border border-lilac/80 px-4 md:px-10">
+    <div className="container mx-auto p-2 max-w-4xl">
+      <div className="rounded-xl shadow-soft text-purple border border-purple p-4 m-2">
+        <div className="bg-offwhite overflow-auto shadow-soft rounded-lg border border-lilac/80 p-4 md:p-6">
           {/* Header with Edit Button */}
-          <div className="flex justify-between items-center px-4 py-5 sm:px-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div>
-              <h3 className="text-xl md:text-4xl text-sage font-logo font-bold tracking-wider">
+              <h3 className="text-2xl md:text-4xl text-sage font-logo font-bold tracking-wider">
                 {user?.firstname} {user?.lastname}
               </h3>
-              <p className="text-gray-500 mt-1">@{username}</p>
+              <p className="text-gray-500 mt-1 text-sm md:text-base">
+                @{username}
+              </p>
             </div>
 
             {!isEditing ? (
               <Button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center bg-sage text-white px-4 py-2 rounded-md hover:bg-sage/80 transition-colors"
+                className="flex items-center bg-sage text-white px-3 md:px-4 py-2 rounded-md hover:bg-sage/80 transition-colors text-sm md:text-base w-full sm:w-auto justify-center"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Profile
               </Button>
             ) : (
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   onClick={handleSave}
-                  className="flex px-4 text-white rounded-md transition-colors"
+                  className="flex items-center justify-center bg-green-600 text-white px-3 md:px-4 py-2 rounded-md hover:bg-green-700 transition-colors text-sm md:text-base w-full sm:w-auto"
                 >
-                  <p>
-                    <Save className="inline w-4 h-4 mr-2" />
-                    Save
-                  </p>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save
                 </Button>
                 <Button
                   onClick={handleCancel}
-                  className="flex px-4 bg-gray-500 text-white rounded-md hover:bg-gray-700 transition-colors"
+                  className="flex items-center justify-center bg-gray-500 text-white px-3 md:px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm md:text-base w-full sm:w-auto"
                 >
-                  <p>
-                    <X className="inline w-4 h-4 mr-2" />
-                    Cancel
-                  </p>
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
                 </Button>
               </div>
             )}
           </div>
 
           {error && (
-            <div className="px-4 py-3 mb-4 bg-red-50 text-red-700 rounded-md">
+            <div className="px-4 py-3 mb-4 bg-red-50 text-red-700 rounded-md text-sm md:text-base">
               {error}
             </div>
           )}
 
-          <div className="border-t border-lilac/80 px-4 py-5 sm:p-0">
-            <dl className="sm:divide-y sm:divide-eggshell/30">
+          <div className="border-t border-lilac/80 pt-4">
+            <dl className="space-y-4 md:space-y-0 md:divide-y md:divide-gray-200">
               {/* Firstname Field */}
-              <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt className="font-bold text-sage text-base md:text-lg">
+              <div className="py-2 md:py-4 md:grid md:grid-cols-3 md:gap-4">
+                <dt className="font-bold text-sage text-base md:text-lg mb-1 md:mb-0">
                   First Name
                 </dt>
-                <dd className="font-sans mt-1 text-sm text-gray-700 sm:mt-0 sm:col-span-2">
+                <dd className="font-sans text-sm md:text-base text-gray-700 md:col-span-2">
                   {isEditing ? (
                     <input
                       type="text"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage text-sm md:text-base"
                     />
                   ) : (
-                    user?.firstname || "Not provided"
+                    user?.firstname || (
+                      <span className="text-gray-400">Not provided</span>
+                    )
                   )}
                 </dd>
               </div>
 
               {/* Lastname Field */}
-              <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt className="font-bold text-sage text-base md:text-lg">
+              <div className="py-2 md:py-4 md:grid md:grid-cols-3 md:gap-4">
+                <dt className="font-bold text-sage text-base md:text-lg mb-1 md:mb-0">
                   Last Name
                 </dt>
-                <dd className="font-sans mt-1 text-sm text-gray-700 sm:mt-0 sm:col-span-2">
+                <dd className="font-sans text-sm md:text-base text-gray-700 md:col-span-2">
                   {isEditing ? (
                     <input
                       type="text"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage text-sm md:text-base"
                     />
                   ) : (
-                    user?.lastname || "Not provided"
+                    user?.lastname || (
+                      <span className="text-gray-400">Not provided</span>
+                    )
                   )}
                 </dd>
               </div>
 
               {/* Email Field */}
-              <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt className="font-bold text-sage text-base md:text-lg">
+              <div className="py-2 md:py-4 md:grid md:grid-cols-3 md:gap-4">
+                <dt className="font-bold text-sage text-base md:text-lg mb-1 md:mb-0">
                   Email
                 </dt>
-                <dd className="font-sans mt-1 text-sm text-gray-700 sm:mt-0 sm:col-span-2">
+                <dd className="font-sans text-sm md:text-base text-gray-700 md:col-span-2">
                   {isEditing ? (
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage text-sm md:text-base"
                     />
                   ) : (
-                    user?.email || "Not provided"
+                    user?.email || (
+                      <span className="text-gray-400">Not provided</span>
+                    )
                   )}
                 </dd>
               </div>
 
               {/* Date of Birth Field */}
-              <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt className="font-bold text-sage text-base md:text-lg">
+              <div className="py-2 md:py-4 md:grid md:grid-cols-3 md:gap-4">
+                <dt className="font-bold text-sage text-base md:text-lg mb-1 md:mb-0">
                   Date of Birth
                 </dt>
-                <dd className="font-sans mt-1 text-sm text-gray-700 sm:mt-0 sm:col-span-2">
+                <dd className="font-sans text-sm md:text-base text-gray-700 md:col-span-2">
                   {isEditing ? (
                     <input
                       type="date"
                       name="dateOfBirth"
                       value={formData.dateOfBirth}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage text-sm md:text-base"
                     />
                   ) : user?.profileDetails?.dateOfBirth ? (
                     new Date(
                       user.profileDetails.dateOfBirth
                     ).toLocaleDateString()
                   ) : (
-                    "Not provided"
+                    <span className="text-gray-400">Not provided</span>
                   )}
                 </dd>
               </div>
 
               {/* Gender Field */}
-              <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt className="font-bold text-sage text-base md:text-lg">
+              <div className="py-2 md:py-4 md:grid md:grid-cols-3 md:gap-4">
+                <dt className="font-bold text-sage text-base md:text-lg mb-1 md:mb-0">
                   Gender
                 </dt>
-                <dd className="font-sans mt-1 text-sm text-gray-700 sm:mt-0 sm:col-span-2">
+                <dd className="font-sans text-sm md:text-base text-gray-700 md:col-span-2">
                   {isEditing ? (
                     <select
                       name="gender"
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage text-sm md:text-base"
                     >
                       <option value="">Select gender</option>
                       <option value="FEMALE">Female</option>
@@ -274,7 +278,7 @@ export default function ProfileDetailsPage() {
                       .toLowerCase()
                       .replace(/_/g, " ")
                   ) : (
-                    "Not provided"
+                    <span className="text-gray-400">Not provided</span>
                   )}
                 </dd>
               </div>

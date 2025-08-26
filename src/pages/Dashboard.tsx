@@ -123,9 +123,6 @@ export default function Dashboard() {
         "DESC"
       );
 
-      // Check what type searchLogs returns and map accordingly
-      // If it returns BirdwatchingLogReadOnlyDTO[], use mapLogDTOtoTableItem
-      // If it returns BirdwatchingLogTableItem[], use identityMapper
       const mappedLogs = (response.content || []).map(mapLogDTOtoTableItem);
 
       // Filter by user if "Show My Logs" is enabled
@@ -191,114 +188,116 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="flex space-x-4 mb-6">
-        <input
-          type="text"
-          placeholder="What are you looking for? (bird name, location, spotter, etc.)"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyUp={handleKeyPress}
-          className="block bg-lilac/40 border border-purple rounded-lg w-full p-3 hover:ring-2 hover:ring-purple/70 focus:outline-2 focus:outline-offset-2 focus:outline-sage font-sans text-purple font-thin tracking-wider"
-        />
-        <button
-          className="bg-purple/60 hover:text-purple/70 hover:shadow-md text-lilac text-lg font-semibold font-sans rounded-lg px-6 py-3 transition duration-200 shadow-md disabled:opacity-50"
-          onClick={handleSearch}
-          disabled={isLoading}
-          type="button"
-        >
-          {isLoading ? (
-            <span className="flex gap-2">
-              <Search
-                className="my-auto w-5 h-5 text-purple"
-                strokeWidth={1.5}
-              />
-              Searching...
-            </span>
-          ) : (
-            <span className="flex gap-2">
-              <Search
-                className="my-auto w-5 h-5 text-purple"
-                strokeWidth={1.5}
-              />
-              Search
-            </span>
-          )}
-        </button>
-
-        {isSearching && (
+      <div className="flex flex-col items-center w-full px-4">
+        <div className="flex space-x-4 mb-6 w-full max-w-4xl ">
+          <input
+            type="text"
+            placeholder="What are you looking for? (bird name, location, spotter, etc.)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyUp={handleKeyPress}
+            className="block bg-lilac/40 border border-purple rounded-lg w-full p-3 hover:ring-2 hover:ring-purple/70 focus:outline-2 focus:outline-offset-2 focus:outline-sage font-sans text-purple font-thin tracking-wider"
+          />
           <button
-            className="bg-sage/60 hover:text-sage/70 hover:shadow-md text-offwhite text-lg font-semibold font-sans rounded-lg px-6 py-3 transition duration-200 shadow-md"
-            onClick={clearSearch}
+            className="bg-purple/60 hover:text-purple/70 hover:shadow-md text-lilac text-lg font-semibold font-sans rounded-lg px-6 py-3 transition duration-200 shadow-md disabled:opacity-50"
+            onClick={handleSearch}
+            disabled={isLoading}
             type="button"
           >
-            Clear Search
-          </button>
-        )}
-      </div>
-
-      {/* Toggle My Logs Button */}
-      <div className="mb-6 flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={toggleMyLogs}
-            disabled={!isAuthenticated} // Disable if user not logged in
-            className={`px-4 py-2 rounded-lg font-sans font-semibold transition duration-200 shadow-md flex items-center gap-2 ${
-              showOnlyMyLogs
-                ? "bg-sage text-offwhite hover:bg-sage/80"
-                : "bg-lilac/40 text-purple hover:bg-lilac/60"
-            } ${!isAuthenticated ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            <User className="w-4 h-4" />
-            {showOnlyMyLogs ? "Show All Logs" : "Show My Logs"}
+            {isLoading ? (
+              <span className="flex gap-2">
+                <Search
+                  className="my-auto w-5 h-5 text-purple"
+                  strokeWidth={1.5}
+                />
+                Searching...
+              </span>
+            ) : (
+              <span className="flex gap-2">
+                <Search
+                  className="my-auto w-5 h-5 text-purple"
+                  strokeWidth={1.5}
+                />
+                Search
+              </span>
+            )}
           </button>
 
-          {showOnlyMyLogs && (
-            <span className="text-purple/70 font-sans">
-              Showing only your logs ({myLogs.length})
-            </span>
-          )}
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
-      <div className="mt-8 overflow-x-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="font-logo text-purple text-2xl">
-            {isSearching
-              ? `Search Results (${logsToDisplay.length})`
-              : showOnlyMyLogs
-              ? "My Recent Sightings"
-              : "All Recent Sightings"}
-          </h2>
-
-          {!isSearching && (
-            <span className="text-purple/70 font-sans">
-              {showOnlyMyLogs
-                ? `${myLogs.length} of your logs`
-                : `${allLogs.length} total logs`}
-            </span>
-          )}
-
-          {isSearching && logsToDisplay.length > 0 && (
-            <span className="text-purple/70 font-sans">
-              Found {logsToDisplay.length} matching logs
-            </span>
+          {isSearching && (
+            <button
+              className="bg-sage/60 hover:text-sage/70 hover:shadow-md text-offwhite text-lg font-semibold font-sans rounded-lg px-6 py-3 transition duration-200 shadow-md"
+              onClick={clearSearch}
+              type="button"
+            >
+              Clear Search
+            </button>
           )}
         </div>
 
-        {isLoading ? (
-          <div className="text-center p-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple mx-auto"></div>
-            <p className="mt-4 text-purple/70">Loading logs...</p>
+        {/* Toggle My Logs Button */}
+        <div className="mb-6 flex justify-between items-center w-full max-w-4xl ">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={toggleMyLogs}
+              disabled={!isAuthenticated} // Disable if user not logged in
+              className={`px-4 py-2 rounded-lg font-sans font-semibold transition duration-200 shadow-md flex items-center gap-2 ${
+                showOnlyMyLogs
+                  ? "bg-sage text-offwhite hover:bg-sage/80"
+                  : "bg-lilac/40 text-purple hover:bg-lilac/60"
+              } ${!isAuthenticated ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <User className="w-4 h-4" />
+              {showOnlyMyLogs ? "Show All Logs" : "Show My Logs"}
+            </button>
+
+            {showOnlyMyLogs && (
+              <span className="text-purple/70 font-sans">
+                Showing only your logs ({myLogs.length})
+              </span>
+            )}
           </div>
-        ) : (
-          <TableDashboard logs={logsToDisplay} showHeader={true} />
+        </div>
+
+        {error && (
+          <div className="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
         )}
+
+        <div className="mt-2 overflow-x-auto w-full max-w-4xl ">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-logo text-purple text-2xl">
+              {isSearching
+                ? `Search Results (${logsToDisplay.length})`
+                : showOnlyMyLogs
+                ? "My Recent Sightings"
+                : "All Recent Sightings"}
+            </h2>
+
+            {!isSearching && (
+              <span className="text-purple/70 font-sans">
+                {showOnlyMyLogs
+                  ? `${myLogs.length} of your logs`
+                  : `${allLogs.length} total logs`}
+              </span>
+            )}
+
+            {isSearching && logsToDisplay.length > 0 && (
+              <span className="text-purple/70 font-sans">
+                Found {logsToDisplay.length} matching logs
+              </span>
+            )}
+          </div>
+
+          {isLoading ? (
+            <div className="text-center p-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple mx-auto"></div>
+              <p className="mt-4 text-purple/70">Loading logs...</p>
+            </div>
+          ) : (
+            <TableDashboard logs={logsToDisplay} showHeader={true} />
+          )}
+        </div>
       </div>
     </>
   );

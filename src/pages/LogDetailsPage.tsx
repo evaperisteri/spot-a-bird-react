@@ -94,13 +94,13 @@ export default function LogDetailsPage() {
 
   return (
     <>
-      <div className="container mx-auto p-4 max-w-4xl">
-        <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col items-center w-full px-4 ">
+        <div className="w-full max-w-2xl text-start mb-6">
           <h1 className="text-xl md:text-3xl font-logo text-purple">
             Log Details
           </h1>
           {log.user?.id === currentUserId && (
-            <div className="flex space-x-2">
+            <div className="flex justify-end space-x-2">
               <Button onClick={() => navigate(`/logs/${log.id}/edit`)}>
                 Edit Log
               </Button>
@@ -114,7 +114,7 @@ export default function LogDetailsPage() {
           )}
         </div>
 
-        <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
+        <div className="w-full max-w-2xl bg-offwhite/80 rounded-lg shadow-soft p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Bird Image Section */}
             <div className="md:col-span-1">

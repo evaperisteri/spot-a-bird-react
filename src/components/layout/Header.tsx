@@ -14,7 +14,7 @@ export default function Header() {
     context;
   console.log(context);
   return (
-    <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-20 bg-offwhite/90">
+    <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-16 lg:h-20 bg-offwhite/90">
       <nav className="flex justify-between sm:px-6 lg:px-8">
         <Link
           to="/dashboard"
@@ -22,7 +22,7 @@ export default function Header() {
         >
           <img
             src="/images/logoSquared.png"
-            className="shadow-heavy w-16 h-16 rounded-full border-2 border-lilac/80"
+            className="shadow-heavy w-14 h-14 lg:w-16 lg:h-16 rounded-full border-2 border-lilac/80"
             alt="Logo"
           />
           <span className="text-purple font-logo text-3xl font-bold tracking-widest">
@@ -43,7 +43,7 @@ export default function Header() {
                 onClick={logoutUser}
                 className="bg-lilac text-purple m-2 rounded shadow-heavy hover:bg-lilac/80 transition"
               >
-                <FaHiking className="m-2 h-8 w-8" />
+                <FaHiking className="m-2 h-6 w-6" />
               </button>
               <span className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-purple text-offwhite text-xs font-sans px-2 py-1 rounded whitespace-nowrap -bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-none">
                 Logout

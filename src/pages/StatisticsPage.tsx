@@ -72,7 +72,9 @@ export default function StatisticsPage() {
   return (
     <>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-logo text-purple mb-6">Statistics</h1>
+        <h1 className="text-center sm:text-start text-3xl font-logo text-purple mx-4 mb-6">
+          Statistics
+        </h1>
         <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 font-logo">
             {/* Total Species Card */}
