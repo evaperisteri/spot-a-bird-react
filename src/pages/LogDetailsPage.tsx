@@ -13,6 +13,7 @@ export default function LogDetailsPage() {
   const [log, setLog] = useState<BirdwatchingLogReadOnlyDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const fetchLog = async () => {
@@ -48,6 +49,10 @@ export default function LogDetailsPage() {
     }
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -66,7 +71,7 @@ export default function LogDetailsPage() {
           onClick={() => navigate("/dashboard")}
           className="bg-purple text-white px-4 py-2 rounded-lg hover:bg-purple/80"
         >
-          Back to Dashboard
+          Back to Home
         </button>
       </div>
     );
@@ -81,7 +86,7 @@ export default function LogDetailsPage() {
           onClick={() => navigate("/dashboard")}
           className="bg-purple text-white px-4 py-2 rounded-lg hover:bg-purple/80"
         >
-          Back to Dashboard
+          Back to Home
         </button>
       </div>
     );
@@ -101,7 +106,7 @@ export default function LogDetailsPage() {
               </Button>
               <Button
                 onClick={handleDelete}
-                className="bg-rose-400 text-offwhite px-4 py-2 rounded-lg hover:bg-rose-700 transition-colors"
+                className="bg-rose-300 text-offwhite px-4 py-2 rounded-lg hover:bg-rose-700 transition-colors"
               >
                 Delete Log
               </Button>
@@ -110,10 +115,32 @@ export default function LogDetailsPage() {
         </div>
 
         <div className="bg-offwhite/80 rounded-lg shadow-soft p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Bird Image Section */}
+            <div className="md:col-span-1">
               <h2 className="text-xl font-semibold text-purple mb-4">
-                Bird Information
+                Bird's Image
+              </h2>
+              <div className="flex justify-center">
+                {log.bird.imageUrl && !imageError ? (
+                  <img
+                    src={log.bird.imageUrl}
+                    alt={log.bird.name}
+                    className="w-full max-w-xs h-auto rounded-lg shadow-md object-cover"
+                    onError={handleImageError}
+                  />
+                ) : (
+                  <div className="w-full max-w-xs h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500">No image available</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Bird Information Section */}
+            <div className="md:col-span-1">
+              <h2 className="text-xl font-semibold text-purple mb-4">
+                Bird's Information
               </h2>
               <div className="space-y-3">
                 <p>
@@ -132,14 +159,18 @@ export default function LogDetailsPage() {
                   <span className="font-sans font-semibold text-gray-700">
                     Family:
                   </span>
-                  <span className="text-sage"> {log.bird.family.name} </span>
+                  <span className="text-sage">
+                    {" "}
+                    {log.bird.family?.name || "Unknown"}{" "}
+                  </span>
                 </p>
               </div>
             </div>
 
-            <div>
+            {/* Observation Details Section */}
+            <div className="md:col-span-1">
               <h2 className="text-xl font-semibold text-purple mb-4">
-                Observation Details
+                Spotting Details
               </h2>
               <div className="space-y-3">
                 <p>
@@ -159,7 +190,6 @@ export default function LogDetailsPage() {
                     Date:
                   </span>
                   <span className="text-sage">
-                    {" "}
                     {new Date(log.createdAt).toLocaleDateString()}
                   </span>
                 </p>

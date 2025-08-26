@@ -6,7 +6,7 @@ export default function Layout() {
   return (
     <div className="bg-[url('/images/ssspot.svg')] bg-cover bg-center min-h-screen">
       <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
-        <div className="bg-offwhite/70 h-20">
+        <div className="h-20">
           <Header />
         </div>
         <div className=" overflow-auto ">

@@ -13,6 +13,7 @@ export interface BirdReadOnlyDTO {
   name: string;
   scientificName: string;
   family: BirdFamilyDTO;
+  imageUrl: string;
 }
 
 export interface BirdFamilyDTO {

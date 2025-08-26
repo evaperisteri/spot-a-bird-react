@@ -14,7 +14,7 @@ export default function Header() {
     context;
   console.log(context);
   return (
-    <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-20 bg-offwhite/95">
+    <header className="sticky top-0 z-50 shadow-edge border border-lilac/80 p-2 h-20 bg-offwhite/90">
       <nav className="flex justify-between sm:px-6 lg:px-8">
         <Link
           to="/dashboard"

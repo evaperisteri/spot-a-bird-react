@@ -90,12 +90,6 @@ export default function Logform({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Use custom onSubmit if provided, otherwise use default behavior
-    if (onSubmit) {
-      onSubmit(formData);
-      return;
-    }
-
     // Default behavior (create new log)
     setLoading(true);
     setError(null);
@@ -113,6 +107,11 @@ export default function Logform({
         quantity: formData.quantity,
         regionName: formData.regionName,
       };
+
+      if (onSubmit) {
+        onSubmit(logData);
+        return;
+      }
 
       await birdwatchinglogs.createLog(logData);
       navigate("/dashboard", {

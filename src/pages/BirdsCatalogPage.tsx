@@ -177,7 +177,7 @@ export default function BirdsCatalogPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-6xl">
-      <div className="bg-offwhite rounded-xl shadow-soft border border-purple p-6 mb-6">
+      <div className=" rounded-xl shadow-soft border border-offwhite/80 p-6 mb-6">
         <h1 className="text-3xl font-logo text-purple mb-6 flex items-center">
           <Bird className="w-8 h-8 mr-3" />
           Bird Catalog
