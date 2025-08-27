@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { getUserProfile, updateUserProfile, UserUpdateDTO } from "../api/user";
+import {
+  getCurrentUserProfile,
+  updateCurrentUserProfile,
+  UserUpdateDTO,
+} from "../api/user";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { Edit, Save, X } from "lucide-react";
 import { UserProfile } from "../api/user";
 import { Button } from "../components/ui/button";
+import { toast } from "sonner";
 
 export default function ProfileDetailsPage() {
   const { userId, username } = useAuth();
@@ -27,7 +32,8 @@ export default function ProfileDetailsPage() {
       try {
         setLoading(true);
         setError(null);
-        const userData = await getUserProfile(userId);
+        // Use the current user endpoint instead of admin endpoint
+        const userData = await getCurrentUserProfile();
         setUser(userData);
         setFormData({
           firstName: userData.firstname || "",
@@ -60,7 +66,8 @@ export default function ProfileDetailsPage() {
   const handleSave = async () => {
     try {
       setError(null);
-      const updatedUser = await updateUserProfile(formData);
+      // Use the current user update endpoint instead of admin endpoint
+      const updatedUser = await updateCurrentUserProfile(formData);
       setUser({
         ...user!,
         firstname: updatedUser.firstname,
@@ -69,9 +76,11 @@ export default function ProfileDetailsPage() {
         profileDetails: updatedUser.profileDetails,
       });
       setIsEditing(false);
+      toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile:", err);
       setError("Failed to update profile. Please try again.");
+      toast.error("Failed to update profile");
     }
   };
 

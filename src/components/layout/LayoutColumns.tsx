@@ -16,7 +16,7 @@ export default function Layout() {
 
       {/* Mobile sidebar toggle button */}
       <button
-        className="lg:hidden fixed top-28 left-4 z-50 bg-sage text-offwhite p-2 rounded-md shadow-heavy hover:bg-sage/90 transition-colors"
+        className="lg:hidden fixed top-22 left-1 z-50 bg-sage border border-offwhite/30 text-offwhite p-2 rounded-md shadow-heavy hover:bg-sage/90 transition-colors"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         aria-label="Toggle navigation menu"
       >
@@ -38,7 +38,6 @@ export default function Layout() {
               onClick={(e) => {
                 if (window.location.pathname === "/dashboard") {
                   e.preventDefault();
-                  // Toggle logic here
                 }
               }}
             >

@@ -57,3 +57,27 @@ export const updateUserProfile = async (
 
   return response.json();
 };
+
+export const getCurrentUserProfile = async (): Promise<UserProfile> => {
+  const response = await authFetch("/api/my-info");
+  if (!response.ok) {
+    throw new Error("Failed to fetch user profile");
+  }
+  return response.json();
+};
+
+export const updateCurrentUserProfile = async (
+  data: UserUpdateDTO
+): Promise<UserProfile> => {
+  const response = await authFetch("/api/users/update-user", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update user profile");
+  }
+  return response.json();
+};
