@@ -8,6 +8,7 @@ type AuthContextProps = {
   username: string | null;
   firstname: string | null;
   lastname: string | null;
+  role: "SPOTTER" | "ADMIN" | null;
   loginUser: (fields: LoginFields) => Promise<void>;
   logoutUser: () => void;
   loading: boolean;

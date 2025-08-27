@@ -4,9 +4,11 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { ButtonHome } from "../ui/ButtonHome";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { role } = useAuth();
 
   return (
     <div className="bg-[url('/images/ssspot.svg')] bg-cover bg-center min-h-screen flex flex-col">
@@ -26,8 +28,8 @@ export default function Layout() {
         {/* Sidebar for desktop - always visible */}
         <div className="hidden lg:flex lg:w-64 lg:flex-shrink-0 lg:px-4">
           <div className="w-full flex flex-col gap-4 rounded-xl shadow-soft border border-purple/80 p-4 bg-offwhite/80 h-fit">
-            <ButtonHome type="button" to="/savelog" className="w-full">
-              New Log
+            <ButtonHome type="button" to="/dashboard" className="w-full">
+              Home
             </ButtonHome>
             <ButtonHome
               type="button"
@@ -42,15 +44,23 @@ export default function Layout() {
             >
               My logs
             </ButtonHome>
+            <ButtonHome type="button" to="/savelog" className="w-full">
+              New Log
+            </ButtonHome>
             <ButtonHome type="button" to="/statistics" className="w-full">
               Stats
-            </ButtonHome>
-            <ButtonHome type="button" to="/myinfo" className="w-full">
-              Profile
             </ButtonHome>
             <ButtonHome type="button" to="/birds" className="w-full">
               All Birds
             </ButtonHome>
+            <ButtonHome type="button" to="/myinfo" className="w-full">
+              Profile
+            </ButtonHome>
+            {role === "ADMIN" && (
+              <ButtonHome type="button" to="/users" className="w-full">
+                User Management
+              </ButtonHome>
+            )}
           </div>
         </div>
 
@@ -79,11 +89,11 @@ export default function Layout() {
               <div className="flex flex-col gap-4 mt-8">
                 <ButtonHome
                   type="button"
-                  to="/savelog"
+                  to="/dashboard"
                   className="w-full"
                   onClick={() => setIsSidebarOpen(false)}
                 >
-                  New Log
+                  Home
                 </ButtonHome>
                 <ButtonHome
                   type="button"
@@ -98,6 +108,14 @@ export default function Layout() {
                   }}
                 >
                   My logs
+                </ButtonHome>
+                <ButtonHome
+                  type="button"
+                  to="/savelog"
+                  className="w-full"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  New Log
                 </ButtonHome>
                 <ButtonHome
                   type="button"
@@ -123,6 +141,17 @@ export default function Layout() {
                 >
                   All Birds
                 </ButtonHome>
+
+                {/* 🚀 Admin-only (mobile too) */}
+                {role === "ADMIN" && (
+                  <ButtonHome
+                    to="/users"
+                    className="w-full"
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
+                    User Management
+                  </ButtonHome>
+                )}
               </div>
             </div>
           </>

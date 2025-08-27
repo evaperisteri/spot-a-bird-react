@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [username, setUsername] = useState<string | null>(null);
   const [firstname, setFirstname] = useState<string | null>(null);
   const [lastname, setLastname] = useState<string | null>(null);
+  const [role, setRole] = useState<"SPOTTER" | "ADMIN" | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUserProfile = async (id: number) => {
@@ -44,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
           setUsername(decoded.username ?? null);
           setUserId(decoded.userId ?? null);
-
+          setRole(decoded.role ?? null);
           // Fetch user profile if userId is available
           if (decoded.userId) {
             await fetchUserProfile(decoded.userId);
@@ -88,6 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const decoded = jwtDecode<JwtPayload>(res.token);
         setUsername(decoded.username ?? null);
         setUserId(decoded.userId ?? null);
+        setRole(decoded.role ?? null);
 
         // Fetch user profile after successful login
         if (decoded.userId) {
@@ -99,6 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserId(null);
         setFirstname(null);
         setLastname(null);
+        setRole(null);
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -124,6 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         username,
         firstname,
         lastname,
+        role,
         loginUser,
         logoutUser,
         loading,
