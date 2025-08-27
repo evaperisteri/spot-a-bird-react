@@ -5,8 +5,8 @@ export interface UserReadOnlyDTO {
   id: number;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   role: Role;
   isActive: boolean;
   profileDetails?: ProfileDetailsDTO;
@@ -20,8 +20,8 @@ export interface ProfileDetailsDTO {
 export interface UserInsertDTO {
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   password: string;
   role: Role;
   isActive: boolean;
@@ -36,8 +36,8 @@ export interface ProfileDetailsInsertDTO {
 }
 
 export interface UserUpdateDTO {
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   email: string;
   dateOfBirth?: string;
   gender?: Gender;
@@ -51,7 +51,7 @@ export interface UserFilters {
   isActive?: boolean;
   gender?: Gender;
   page?: number;
-  size?: number;
+  pageSize?: number;
   sortBy?: string;
   sortDirection?: string;
 }

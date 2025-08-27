@@ -16,6 +16,7 @@ import ProfileDetailsPage from "./pages/ProfileDetailsPage";
 import BirdsCatalogPage from "./pages/BirdsCatalogPage";
 import BirdDetails from "./pages/BirdDetails";
 import UserManagement from "./pages/UserManagment";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   return (
@@ -41,7 +42,16 @@ export default function App() {
               <Route path="/myinfo" element={<ProfileDetailsPage />} />
               <Route path="/birds" element={<BirdsCatalogPage />} />
               <Route path="/birds/:id" element={<BirdDetails />} />
-              <Route path="/users" element={<UserManagement />} />
+              <Route
+                path="/users"
+                element={
+                  <ErrorBoundary
+                    fallback={<div>Could not load user management.</div>}
+                  >
+                    <UserManagement />
+                  </ErrorBoundary>
+                }
+              />
             </Route>
           </Route>
         </Routes>

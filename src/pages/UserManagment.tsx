@@ -9,11 +9,28 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFields } from "../api/register";
-import { Pencil, PlusCircle, Trash, X } from "lucide-react";
+import {
+  Pencil,
+  PlusCircle,
+  Trash,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
-import { PaginatedResponse } from "../types/birdwatchingTypes";
+import { authFetch } from "../api/client";
+
+// Define the response type for paginated users
+interface PaginatedUserResponse {
+  data: UserReadOnlyDTO[];
+  totalPages: number;
+  totalElements: number;
+  numberOfElements: number;
+  currentPage: number;
+  pageSize: number;
+}
 
 const UserManagement = () => {
   const [users, setUsers] = useState<UserReadOnlyDTO[]>([]);
@@ -43,35 +60,44 @@ const UserManagement = () => {
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+
+      // Prepare filters according to your backend
       const apiFilters: UserFilters = {
         username: filters.username || undefined,
         email: filters.email || undefined,
         role: filters.role || undefined,
         isActive: filters.isActive ? filters.isActive === "true" : undefined,
-        page,
-        size: rowsPerPage,
+        page: page,
+        pageSize: rowsPerPage,
       };
 
-      const response = await fetch("/api/users/filtered/paginated", {
+      console.log("Sending filters:", apiFilters);
+
+      const response = await authFetch("/api/users/filtered/paginated", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(apiFilters),
+        body: JSON.stringify(apiFilters), // Send filters directly, not wrapped in object
       });
 
-      if (!response.ok) throw new Error("Failed to fetch users");
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Failed to fetch users: ${response.status} ${errorText}`
+        );
+      }
 
-      const data: PaginatedResponse<UserReadOnlyDTO> = await response.json();
-      setUsers(data.content);
+      const data: PaginatedUserResponse = await response.json();
+      console.log("Received data:", data);
+
+      setUsers(data.data);
       setTotalUsers(data.totalElements);
     } catch (err) {
       toast.error("Failed to fetch users", {
         description: "Please try again later.",
       });
-      console.error(err);
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
@@ -97,8 +123,8 @@ const UserManagement = () => {
       setEditingUser(user);
       setValue("username", user.username);
       setValue("email", user.email);
-      setValue("firstname", user.firstName);
-      setValue("lastname", user.lastName);
+      setValue("firstname", user.firstname);
+      setValue("lastname", user.lastname);
       setValue("role", user.role);
       setValue("dateOfBirth", user.profileDetails?.dateOfBirth || "");
       setValue("gender", user.profileDetails?.gender || "OTHER");
@@ -120,22 +146,21 @@ const UserManagement = () => {
     );
 
     try {
-      const token = localStorage.getItem("token");
-
       if (editingUser) {
+        console.log("update user with id: ", editingUser.id);
+        // Prepare update data according to your UserUpdateDTO
         const updateData: UserUpdateDTO = {
-          firstName: data.firstname,
-          lastName: data.lastname,
+          firstname: data.firstname,
+          lastname: data.lastname,
           email: data.email,
           dateOfBirth: data.dateOfBirth || undefined,
           gender: data.gender || undefined,
         };
 
-        const response = await fetch("/api/users/update-user", {
+        const response = await authFetch(`/api/users/${editingUser.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(updateData),
         });
@@ -147,6 +172,7 @@ const UserManagement = () => {
 
         toast.success("User updated successfully", { id: toastId });
       } else {
+        // Create new user - same payload as registration
         const payload = {
           ...data,
           isActive: true,
@@ -156,11 +182,10 @@ const UserManagement = () => {
           },
         };
 
-        const response = await fetch("/api/users/save", {
+        const response = await authFetch("/api/users/save", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         });
@@ -220,12 +245,8 @@ const UserManagement = () => {
     const toastId = toast.loading("Deleting user...");
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`/api/users/${id}`, {
+      const response = await authFetch(`/api/users/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       if (!response.ok) {
@@ -352,7 +373,7 @@ const UserManagement = () => {
         </Button>
       </div>
 
-      {/* Users Table */}
+      {/* Users Table - Responsive */}
       <div className="bg-offwhite/90 rounded-xl shadow-soft overflow-hidden border-2 border-lilac/50">
         {loading ? (
           <div className="flex justify-center items-center py-12">
@@ -360,7 +381,8 @@ const UserManagement = () => {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Desktop Table (hidden on mobile) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-lilac/30">
                   <tr>
@@ -400,10 +422,10 @@ const UserManagement = () => {
                         {user.email}
                       </td>
                       <td className="px-6 py-4 text-purple font-sans">
-                        {user.firstName}
+                        {user.firstname}
                       </td>
                       <td className="px-6 py-4 text-purple font-sans">
-                        {user.lastName}
+                        {user.lastname}
                       </td>
                       <td className="px-6 py-4">
                         <span
@@ -457,10 +479,89 @@ const UserManagement = () => {
               </table>
             </div>
 
+            {/* Mobile Cards (shown on mobile) */}
+            <div className="md:hidden">
+              {users.map((user) => (
+                <div
+                  key={user.id}
+                  className="p-4 border-b border-lilac/20 hover:bg-lilac/10 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="text-purple font-semibold font-sans">
+                        {user.username}
+                      </h3>
+                      <p className="text-purple/70 text-sm font-sans">
+                        {user.email}
+                      </p>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-purple hover:bg-lilac/20 p-1 h-8 w-8"
+                        onClick={() => handleOpenDialog(user)}
+                        title="Edit"
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-rose-600 hover:bg-rose-100 p-1 h-8 w-8"
+                        onClick={() => handleDelete(user.id)}
+                        title="Delete"
+                      >
+                        <Trash size={14} />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div>
+                      <p className="text-xs text-purple/60 font-sans">
+                        First Name
+                      </p>
+                      <p className="text-purple font-sans">{user.firstname}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-purple/60 font-sans">
+                        Last Name
+                      </p>
+                      <p className="text-purple font-sans">{user.lastname}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-sans ${
+                        user.role === "ADMIN"
+                          ? "bg-purple/20 text-purple"
+                          : user.role === "SPOTTER"
+                          ? "bg-sage/20 text-sage"
+                          : "bg-lilac/20 text-lilac"
+                      }`}
+                    >
+                      {user.role}
+                    </span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-sans ${
+                        user.isActive
+                          ? "bg-green-100 text-green-800"
+                          : "bg-rose-100 text-rose-800"
+                      }`}
+                    >
+                      {user.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {/* Pagination */}
-            <div className="px-6 py-4 border-t border-lilac/20 flex items-center justify-between">
+            <div className="px-4 md:px-6 py-4 border-t border-lilac/20 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center">
-                <span className="text-sm text-purple/70 font-sans mr-4">
+                <span className="text-sm text-purple/70 font-sans mr-2">
                   Rows per page:
                 </span>
                 <select
@@ -485,20 +586,22 @@ const UserManagement = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-lilac text-purple hover:bg-lilac/20"
+                  className="border-lilac text-purple hover:bg-lilac/20 flex items-center"
                   onClick={() => handleChangePage(page - 1)}
                   disabled={page === 0}
                 >
-                  Previous
+                  <ChevronLeft size={16} className="mr-1" />
+                  <span className="hidden sm:inline">Previous</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-lilac text-purple hover:bg-lilac/20"
+                  className="border-lilac text-purple hover:bg-lilac/20 flex items-center"
                   onClick={() => handleChangePage(page + 1)}
                   disabled={(page + 1) * rowsPerPage >= totalUsers}
                 >
-                  Next
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight size={16} className="ml-1" />
                 </Button>
               </div>
             </div>
@@ -509,7 +612,7 @@ const UserManagement = () => {
       {/* Add/Edit User Dialog */}
       {openDialog && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-offwhite rounded-xl shadow-soft w-full max-w-2xl border-2 border-lilac/50">
+          <div className="bg-offwhite rounded-xl shadow-soft w-full max-w-2xl border-2 border-lilac/50 max-h-[90vh] overflow-hidden">
             <div className="flex justify-between items-center px-6 py-4 border-b border-lilac/20">
               <h3 className="text-xl text-purple font-logo">
                 {editingUser ? "Edit User" : "Add New User"}
@@ -525,7 +628,7 @@ const UserManagement = () => {
             </div>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="max-h-96 overflow-y-auto"
+              className="overflow-y-auto max-h-[calc(90vh-120px)]"
             >
               <div className="px-6 py-4 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -689,4 +792,5 @@ const UserManagement = () => {
     </div>
   );
 };
+
 export default UserManagement;
