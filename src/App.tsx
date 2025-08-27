@@ -17,6 +17,7 @@ import BirdsCatalogPage from "./pages/BirdsCatalogPage";
 import BirdDetails from "./pages/BirdDetails";
 import UserManagement from "./pages/UserManagment";
 import ErrorBoundary from "./components/ErrorBoundary";
+import EditUserPage from "./pages/EditUserPAge";
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
                   </ErrorBoundary>
                 }
               />
+              <Route path="/users/edit/:id" element={<EditUserPage />} />
             </Route>
           </Route>
         </Routes>

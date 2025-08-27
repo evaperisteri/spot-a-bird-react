@@ -1,21 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   UserFilterValues,
   UserFilters,
   UserReadOnlyDTO,
-  UserUpdateDTO,
 } from "../types/userTypes";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema, RegisterFields } from "../api/register";
 import {
-  Pencil,
   PlusCircle,
   Trash,
-  X,
   ChevronLeft,
   ChevronRight,
+  Pencil,
 } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../components/ui/input";
@@ -33,28 +29,17 @@ interface PaginatedUserResponse {
 }
 
 const UserManagement = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserReadOnlyDTO[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [editingUser, setEditingUser] = useState<UserReadOnlyDTO | null>(null);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<UserFilterValues>({
     username: "",
     email: "",
     role: "",
     isActive: "",
-  });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    setValue,
-  } = useForm<RegisterFields>({
-    resolver: zodResolver(registerSchema),
   });
 
   const fetchUsers = useCallback(async () => {
@@ -78,7 +63,7 @@ const UserManagement = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(apiFilters), // Send filters directly, not wrapped in object
+        body: JSON.stringify(apiFilters),
       });
 
       if (!response.ok) {
@@ -118,130 +103,16 @@ const UserManagement = () => {
     setPage(0);
   };
 
-  const handleOpenDialog = (user: UserReadOnlyDTO | null = null): void => {
-    if (user) {
-      setEditingUser(user);
-      setValue("username", user.username);
-      setValue("email", user.email);
-      setValue("firstname", user.firstname);
-      setValue("lastname", user.lastname);
-      setValue("role", user.role);
-      setValue("dateOfBirth", user.profileDetails?.dateOfBirth || "");
-      setValue("gender", user.profileDetails?.gender || "OTHER");
-    } else {
-      setEditingUser(null);
-      reset();
-    }
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    reset();
-  };
-
-  const onSubmit = async (data: RegisterFields) => {
-    const toastId = toast.loading(
-      editingUser ? "Updating user..." : "Creating user..."
-    );
-
-    try {
-      if (editingUser) {
-        console.log("update user with id: ", editingUser.id);
-        // Prepare update data according to your UserUpdateDTO
-        const updateData: UserUpdateDTO = {
-          firstname: data.firstname,
-          lastname: data.lastname,
-          email: data.email,
-          dateOfBirth: data.dateOfBirth || undefined,
-          gender: data.gender || undefined,
-        };
-
-        const response = await authFetch(`/api/users/${editingUser.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updateData),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || "Failed to update user");
-        }
-
-        toast.success("User updated successfully", { id: toastId });
-      } else {
-        // Create new user - same payload as registration
-        const payload = {
-          ...data,
-          isActive: true,
-          profileDetailsInsertDTO: {
-            dateOfBirth: data.dateOfBirth,
-            gender: data.gender,
-          },
-        };
-
-        const response = await authFetch("/api/users/save", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || "Failed to create user");
-        }
-
-        toast.success("User created successfully", { id: toastId });
-      }
-
-      setOpenDialog(false);
-      reset();
-      fetchUsers();
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Operation failed", {
-        id: toastId,
-      });
-    }
+  const handleEdit = (user: UserReadOnlyDTO) => {
+    navigate(`/users/edit/${user.id}`);
   };
 
   const handleDelete = async (id: number): Promise<void> => {
-    toast.custom(
-      (t) => (
-        <div className="bg-white rounded-lg shadow-lg p-4 w-80 border-2 border-lilac/50">
-          <h3 className="font-semibold text-purple mb-2 font-logo">
-            Confirm Deletion
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Are you sure you want to delete this user?
-          </p>
-          <div className="flex justify-end space-x-2">
-            <button
-              className="px-3 py-1 text-gray-600 hover:bg-lilac/20 rounded transition-colors"
-              onClick={() => toast.dismiss(t)}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-3 py-1 bg-rose-500 text-white rounded hover:bg-rose-600 transition-colors"
-              onClick={async () => {
-                toast.dismiss(t);
-                await performDelete(id);
-              }}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ),
-      { duration: 10000 }
-    );
-  };
+    // Use window.confirm for simplicity instead of Sonner toast
+    if (!window.confirm("Are you sure you want to delete this user?")) {
+      return;
+    }
 
-  const performDelete = async (id: number): Promise<void> => {
     const toastId = toast.loading("Deleting user...");
 
     try {
@@ -255,12 +126,15 @@ const UserManagement = () => {
       }
 
       toast.success("User deleted successfully", { id: toastId });
+
+      // Refresh the user list
       fetchUsers();
     } catch (err: unknown) {
       toast.error(
         err instanceof Error ? err.message : "Failed to delete user",
         { id: toastId }
       );
+      console.error("Delete error:", err);
     }
   };
 
@@ -291,7 +165,7 @@ const UserManagement = () => {
         <h2 className="text-3xl text-purple font-logo">User Management</h2>
         <Button
           className="bg-purple/80 hover:bg-purple text-offwhite shadow-soft flex items-center gap-2"
-          onClick={() => handleOpenDialog()}
+          onClick={() => navigate("/users/register")}
         >
           <PlusCircle size={18} />
           Add User
@@ -457,7 +331,7 @@ const UserManagement = () => {
                             variant="ghost"
                             size="sm"
                             className="text-purple hover:bg-lilac/20"
-                            onClick={() => handleOpenDialog(user)}
+                            onClick={() => handleEdit(user)}
                             title="Edit"
                           >
                             <Pencil size={16} />
@@ -500,7 +374,7 @@ const UserManagement = () => {
                         variant="ghost"
                         size="sm"
                         className="text-purple hover:bg-lilac/20 p-1 h-8 w-8"
-                        onClick={() => handleOpenDialog(user)}
+                        onClick={() => handleEdit(user)}
                         title="Edit"
                       >
                         <Pencil size={14} />
@@ -508,7 +382,7 @@ const UserManagement = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-rose-600 hover:bg-rose-100 p-1 h-8 w-8"
+                        className="text-rose-400 hover:bg-rose-100 p-1 h-8 w-8"
                         onClick={() => handleDelete(user.id)}
                         title="Delete"
                       >
@@ -570,8 +444,8 @@ const UserManagement = () => {
                   className="border border-lilac rounded-md px-2 py-1 text-sm text-purple bg-offwhite"
                 >
                   <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
                 </select>
               </div>
 
@@ -608,187 +482,6 @@ const UserManagement = () => {
           </>
         )}
       </div>
-
-      {/* Add/Edit User Dialog */}
-      {openDialog && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-offwhite rounded-xl shadow-soft w-full max-w-2xl border-2 border-lilac/50 max-h-[90vh] overflow-hidden">
-            <div className="flex justify-between items-center px-6 py-4 border-b border-lilac/20">
-              <h3 className="text-xl text-purple font-logo">
-                {editingUser ? "Edit User" : "Add New User"}
-              </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-purple hover:bg-lilac/20"
-                onClick={handleCloseDialog}
-              >
-                <X size={20} />
-              </Button>
-            </div>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="overflow-y-auto max-h-[calc(90vh-120px)]"
-            >
-              <div className="px-6 py-4 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="username" className="text-purple font-sans">
-                      Username
-                    </Label>
-                    <Input
-                      id="username"
-                      className="border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple"
-                      {...register("username")}
-                      disabled={isSubmitting || !!editingUser}
-                    />
-                    {errors.username && (
-                      <p className="text-sm text-rose-800 font-sans">
-                        {errors.username.message}
-                      </p>
-                    )}
-                  </div>
-                  {!editingUser && (
-                    <div>
-                      <Label
-                        htmlFor="password"
-                        className="text-purple font-sans"
-                      >
-                        Password
-                      </Label>
-                      <Input
-                        type="password"
-                        id="password"
-                        className="border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple"
-                        {...register("password")}
-                        disabled={isSubmitting}
-                      />
-                      {errors.password && (
-                        <p className="text-sm text-rose-800 font-sans">
-                          {errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  <div>
-                    <Label
-                      htmlFor="firstname"
-                      className="text-purple font-sans"
-                    >
-                      First Name
-                    </Label>
-                    <Input
-                      id="firstname"
-                      className="border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple"
-                      {...register("firstname")}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastname" className="text-purple font-sans">
-                      Last Name
-                    </Label>
-                    <Input
-                      id="lastname"
-                      className="border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple"
-                      {...register("lastname")}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="email" className="text-purple font-sans">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      className="border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple"
-                      {...register("email")}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="dateOfBirth"
-                      className="text-purple font-sans"
-                    >
-                      Date of Birth
-                    </Label>
-                    <Input
-                      type="date"
-                      id="dateOfBirth"
-                      className="border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple"
-                      {...register("dateOfBirth")}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="gender" className="text-purple font-sans">
-                      Gender
-                    </Label>
-                    <select
-                      id="gender"
-                      {...register("gender")}
-                      className="w-full px-3 py-2 text-sm rounded-lg border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple bg-offwhite font-sans"
-                      disabled={isSubmitting}
-                    >
-                      <option value="" disabled>
-                        Select
-                      </option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="NON-BINARY">Non-binary</option>
-                      <option value="GENDERFLUID">Genderfluid</option>
-                      <option value="OTHER">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <Label htmlFor="role" className="text-purple font-sans">
-                      Role
-                    </Label>
-                    <select
-                      id="role"
-                      {...register("role")}
-                      className="w-full px-3 py-2 text-sm rounded-lg border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple bg-offwhite font-sans"
-                      disabled={isSubmitting}
-                    >
-                      <option value="" disabled>
-                        Select
-                      </option>
-                      <option value="ADMIN">Admin</option>
-                      <option value="SPOTTER">Spotter</option>
-                      <option value="USER">User</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="px-6 py-4 border-t border-lilac/20 bg-lilac/10 flex justify-end space-x-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-lilac text-purple hover:bg-lilac/20"
-                  onClick={handleCloseDialog}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-purple/80 hover:bg-purple text-offwhite shadow-soft"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting
-                    ? editingUser
-                      ? "Updating..."
-                      : "Creating..."
-                    : editingUser
-                    ? "Update"
-                    : "Create"}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
