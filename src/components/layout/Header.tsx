@@ -44,7 +44,7 @@ export default function Header() {
               onError={handleImageError}
             />
             {/* Fallback logo */}
-            <div className="hidden w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-sage flex items-center justify-center border-2 border-lilac/80">
+            <div className="hidden w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-sage items-center justify-center border-2 border-lilac/80">
               <span className="text-offwhite font-bold text-lg">🐦</span>
             </div>
           </div>
