@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import {
-  getCurrentUserProfile,
-  updateCurrentUserProfile,
-  UserUpdateDTO,
-} from "../api/user";
+import { getCurrentUserProfile, updateCurrentUserProfile } from "../api/user";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { Edit, Save, X } from "lucide-react";
-import { UserProfile } from "../api/user";
+import { UserProfile, UserUpdateDTO } from "../types/userTypes";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
 
@@ -18,8 +14,8 @@ export default function ProfileDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UserUpdateDTO>({
-    firstName: "",
-    lastName: "",
+    firstname: "",
+    lastname: "",
     email: "",
     dateOfBirth: "",
     gender: "",
@@ -36,8 +32,8 @@ export default function ProfileDetailsPage() {
         const userData = await getCurrentUserProfile();
         setUser(userData);
         setFormData({
-          firstName: userData.firstname || "",
-          lastName: userData.lastname || "",
+          firstname: userData.firstname || "",
+          lastname: userData.lastname || "",
           email: userData.email || "",
           dateOfBirth: userData.profileDetails?.dateOfBirth || "",
           gender: userData.profileDetails?.gender || "",
@@ -87,8 +83,8 @@ export default function ProfileDetailsPage() {
   const handleCancel = () => {
     if (user) {
       setFormData({
-        firstName: user.firstname || "",
-        lastName: user.lastname || "",
+        firstname: user.firstname || "",
+        lastname: user.lastname || "",
         email: user.email || "",
         dateOfBirth: user.profileDetails?.dateOfBirth || "",
         gender: user.profileDetails?.gender || "",
@@ -179,8 +175,8 @@ export default function ProfileDetailsPage() {
                   {isEditing ? (
                     <input
                       type="text"
-                      name="firstName"
-                      value={formData.firstName}
+                      name="firstname"
+                      value={formData.firstname}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage text-sm md:text-base"
                     />
@@ -201,8 +197,8 @@ export default function ProfileDetailsPage() {
                   {isEditing ? (
                     <input
                       type="text"
-                      name="lastName"
-                      value={formData.lastName}
+                      name="lastname"
+                      value={formData.lastname}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sage text-sm md:text-base"
                     />

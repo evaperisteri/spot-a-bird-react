@@ -26,7 +26,7 @@ export default function LoginPage() {
     try {
       console.log("Attempting login...");
       await loginUser(data);
-      console.log("Login successful, navigating...");
+      console.log("Login successful, navigating...", data);
       toast.success("Login successful!");
       navigate("/dashboard");
     } catch (err) {

@@ -3,7 +3,8 @@ import { getCookie, setCookie, deleteCookie } from "../utils/cookies";
 import { jwtDecode } from "jwt-decode";
 import { login, type LoginFields } from "../api/login";
 import { AuthContext } from "./AuthContext";
-import { getUserProfile } from "../api/user";
+import { getCurrentUserProfile, getUserProfile } from "../api/user";
+import { Role, UserProfile } from "@/types/userTypes";
 
 type JwtPayload = {
   username?: string;
@@ -20,12 +21,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<"SPOTTER" | "ADMIN" | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchUserProfile = async (id: number) => {
+  const fetchUserProfile = async (id: number, role: Role | null) => {
     try {
-      const profile = await getUserProfile(id);
-      console.log(profile);
-      setFirstname(profile.firstname ?? profile.firstname ?? null);
-      setLastname(profile.lastname ?? profile.lastname ?? null);
+      let profile: UserProfile;
+
+      if (role === "ADMIN") {
+        profile = await getUserProfile(id);
+      } else {
+        profile = await getCurrentUserProfile();
+      }
+
+      setFirstname(profile.firstname ?? null);
+      setLastname(profile.lastname ?? null);
+
+      console.log("Profile details:", profile.profileDetails);
     } catch (err) {
       console.error("Failed to fetch user profile:", err);
       setFirstname(null);
@@ -48,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setRole(decoded.role ?? null);
           // Fetch user profile if userId is available
           if (decoded.userId) {
-            await fetchUserProfile(decoded.userId);
+            await fetchUserProfile(decoded.userId, decoded.role ?? null);
           }
         } catch (error) {
           console.error("Failed to decode token:", error);
@@ -93,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         // Fetch user profile after successful login
         if (decoded.userId) {
-          await fetchUserProfile(decoded.userId);
+          await fetchUserProfile(decoded.userId, decoded.role ?? null);
         }
       } catch (decodeError) {
         console.error("Failed to decode token after login:", decodeError);

@@ -1,7 +1,12 @@
 export type Role = "ADMIN" | "SPOTTER";
 export type Gender = "FEMALE" | "MALE" | "NON-BINARY" | "GENDERFLUID" | "OTHER";
 
-export interface UserReadOnlyDTO {
+export interface ProfileDetailsDTO {
+  dateOfBirth?: string;
+  gender?: Gender;
+}
+
+export interface UserProfile {
   id: number;
   username: string;
   email: string;
@@ -12,9 +17,9 @@ export interface UserReadOnlyDTO {
   profileDetails?: ProfileDetailsDTO;
 }
 
-export interface ProfileDetailsDTO {
+export interface ProfileDetailsInsertDTO {
   dateOfBirth?: string;
-  gender?: Gender;
+  gender?: Gender | "";
 }
 
 export interface UserInsertDTO {
@@ -29,18 +34,23 @@ export interface UserInsertDTO {
   gender?: Gender;
   profileDetailsInsertDTO?: ProfileDetailsInsertDTO;
 }
-
-export interface ProfileDetailsInsertDTO {
-  dateOfBirth?: string;
-  gender?: Gender;
-}
-
 export interface UserUpdateDTO {
   firstname: string;
   lastname: string;
   email: string;
   dateOfBirth?: string;
-  gender?: Gender;
+  gender?: Gender | "";
+}
+
+export interface UserReadOnlyDTO {
+  id: number;
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  role: Role;
+  isActive: boolean;
+  profileDetails?: ProfileDetailsDTO;
 }
 
 export interface UserFilters {
@@ -56,10 +66,9 @@ export interface UserFilters {
   sortDirection?: string;
 }
 
-// For the filters component
 export interface UserFilterValues {
   username: string;
   email: string;
   role: Role | "";
-  isActive: string; // keep as string if it's a dropdown
+  isActive: string;
 }

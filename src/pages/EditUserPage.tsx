@@ -3,13 +3,28 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema, RegisterFields } from "../api/register";
 import { UserUpdateDTO, UserReadOnlyDTO } from "../types/userTypes";
 import { authFetch } from "../api/client";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { ArrowLeft, Save } from "lucide-react";
+import { z } from "zod";
+
+// Create a specific schema for user updates (without password)
+const userUpdateSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  email: z.string().email("Invalid email address"),
+  firstname: z.string().min(1, "First name is required"),
+  lastname: z.string().min(1, "Last name is required"),
+  dateOfBirth: z.string().optional().or(z.literal("")),
+  gender: z
+    .enum(["MALE", "FEMALE", "NON-BINARY", "GENDERFLUID", "OTHER"])
+    .optional(),
+  role: z.enum(["ADMIN", "SPOTTER"]),
+});
+
+type UserUpdateFields = z.infer<typeof userUpdateSchema>;
 
 const EditUserPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,13 +36,10 @@ const EditUserPage = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    // reset,
     setValue,
-  } = useForm<RegisterFields>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<UserUpdateFields>({
+    resolver: zodResolver(userUpdateSchema),
   });
-
-  console.log("form errors", errors);
 
   useEffect(() => {
     if (!id) return;
@@ -58,19 +70,21 @@ const EditUserPage = () => {
     fetchUser();
   }, [id, setValue]);
 
-  const onSubmit = async (data: RegisterFields) => {
-    console.log("submitting", data);
+  const onSubmit = async (data: UserUpdateFields) => {
     if (!id) return;
 
     const toastId = toast.loading("Updating user...");
 
     try {
+      // Check if the API supports role updates
+      // If not, remove role from the updateData
       const updateData: UserUpdateDTO = {
         firstname: data.firstname,
         lastname: data.lastname,
         email: data.email,
         dateOfBirth: data.dateOfBirth || undefined,
         gender: data.gender || undefined,
+        // role: data.role,
       };
 
       const response = await authFetch(`/api/users/${id}`, {
@@ -87,7 +101,7 @@ const EditUserPage = () => {
       }
 
       toast.success("User updated successfully", { id: toastId });
-      navigate("/users"); // Redirect back to user management
+      navigate("/users");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Operation failed", {
         id: toastId,
@@ -181,6 +195,11 @@ const EditUserPage = () => {
               {...register("firstname")}
               disabled={isSubmitting}
             />
+            {errors.firstname && (
+              <p className="text-sm text-rose-800 font-sans">
+                {errors.firstname.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -193,6 +212,11 @@ const EditUserPage = () => {
               {...register("lastname")}
               disabled={isSubmitting}
             />
+            {errors.lastname && (
+              <p className="text-sm text-rose-800 font-sans">
+                {errors.lastname.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -218,9 +242,7 @@ const EditUserPage = () => {
               className="w-full px-3 py-2 text-sm rounded-lg border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple bg-offwhite font-sans"
               disabled={isSubmitting}
             >
-              <option value="" disabled>
-                Select
-              </option>
+              <option value="OTHER">Select</option>
               <option value="MALE">Male</option>
               <option value="FEMALE">Female</option>
               <option value="NON-BINARY">Non-binary</option>
@@ -239,27 +261,9 @@ const EditUserPage = () => {
               className="w-full px-3 py-2 text-sm rounded-lg border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple bg-offwhite font-sans"
               disabled={isSubmitting}
             >
-              <option value="" disabled>
-                Select
-              </option>
-              <option value="ADMIN">Admin</option>
               <option value="SPOTTER">Spotter</option>
+              <option value="ADMIN">Admin</option>
             </select>
-          </div>
-
-          <div>
-            <Label htmlFor="password" className="text-purple font-sans">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              {...register("password")}
-              disabled={isSubmitting}
-            />
-            {errors.password && (
-              <p className="text-sm text-rose-800">{errors.password.message}</p>
-            )}
           </div>
         </div>
 
