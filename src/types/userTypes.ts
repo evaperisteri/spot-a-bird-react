@@ -1,17 +1,20 @@
+export type Role = "ADMIN" | "SPOTTER";
+export type Gender = "FEMALE" | "MALE" | "NON-BINARY" | "GENDERFLUID" | "OTHER";
+
 export interface UserReadOnlyDTO {
   id: number;
   username: string;
   email: string;
-  firstname: string;
-  lastname: string;
-  role: string;
+  firstName: string;
+  lastName: string;
+  role: Role;
   isActive: boolean;
   profileDetails?: ProfileDetailsDTO;
 }
 
 export interface ProfileDetailsDTO {
   dateOfBirth?: string;
-  gender?: string;
+  gender?: Gender;
 }
 
 export interface UserInsertDTO {
@@ -20,16 +23,16 @@ export interface UserInsertDTO {
   firstName: string;
   lastName: string;
   password: string;
-  role: string;
+  role: Role;
   isActive: boolean;
   dateOfBirth?: string;
-  gender?: string;
+  gender?: Gender;
   profileDetailsInsertDTO?: ProfileDetailsInsertDTO;
 }
 
 export interface ProfileDetailsInsertDTO {
   dateOfBirth?: string;
-  gender?: string;
+  gender?: Gender;
 }
 
 export interface UserUpdateDTO {
@@ -37,37 +40,26 @@ export interface UserUpdateDTO {
   lastName: string;
   email: string;
   dateOfBirth?: string;
-  gender?: string;
+  gender?: Gender;
 }
 
 export interface UserFilters {
   id?: number;
   username?: string;
   email?: string;
-  role?: string;
+  role?: Role;
   isActive?: boolean;
-  gender?: string;
+  gender?: Gender;
   page?: number;
   size?: number;
   sortBy?: string;
   sortDirection?: string;
 }
 
-export interface PaginatedResponse<T> {
-  content: T[];
-  totalPages: number;
-  totalElements: number;
-  number: number;
-  size: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
-}
-
 // For the filters component
 export interface UserFilterValues {
   username: string;
   email: string;
-  role: string;
-  isActive: string;
+  role: Role | "";
+  isActive: string; // keep as string if it's a dropdown
 }
