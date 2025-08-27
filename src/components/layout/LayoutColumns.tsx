@@ -31,7 +31,7 @@ export default function Layout() {
             <ButtonHome type="button" to="/dashboard" className="w-full">
               Home
             </ButtonHome>
-            <ButtonHome
+            {/* <ButtonHome
               type="button"
               to="/dashboard?showMyLogs=true"
               className="w-full"
@@ -42,7 +42,7 @@ export default function Layout() {
               }}
             >
               My logs
-            </ButtonHome>
+            </ButtonHome> */}
             <ButtonHome type="button" to="/savelog" className="w-full">
               New Log
             </ButtonHome>

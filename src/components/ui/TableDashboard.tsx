@@ -214,7 +214,8 @@ export default function TableDashboard({
   if (sortedLogs.length === 0) {
     return (
       <div className="text-center p-8 bg-offwhite/50 rounded-lg">
-        <p className="text-purple/70 mb-4">No birdwatching logs found.</p>
+        <p className="text-purple/70 mb-4">"No birdwatching logs yet</p>
+
         <Link
           to="/newlog"
           className="bg-sage text-offwhite px-4 py-2 rounded-md hover:bg-sage/80 transition-colors inline-block"

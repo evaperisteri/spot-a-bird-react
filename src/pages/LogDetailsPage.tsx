@@ -96,7 +96,7 @@ export default function LogDetailsPage() {
     <>
       <div className="flex flex-col items-center w-full px-4 ">
         <div className="w-full max-w-2xl text-start mb-6">
-          <h1 className="text-xl md:text-3xl font-logo text-purple">
+          <h1 className="text-xl md:text-3xl font-logo text-center text-purple border-b m-2">
             Log Details
           </h1>
           {log.user?.id === currentUserId && (
@@ -114,13 +114,11 @@ export default function LogDetailsPage() {
           )}
         </div>
 
-        <div className="w-full max-w-2xl bg-offwhite/80 rounded-lg shadow-soft p-6">
+        <div className="w-full max-w-6xl bg-offwhite/80 rounded-lg shadow-soft p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Bird Image Section */}
             <div className="md:col-span-1">
-              <h2 className="text-xl font-semibold text-purple mb-4">
-                Bird's Image
-              </h2>
+              <h2 className="text-xl font-semibold text-purple mb-4">Image</h2>
               <div className="flex justify-center">
                 {log.bird.imageUrl && !imageError ? (
                   <img
@@ -140,7 +138,7 @@ export default function LogDetailsPage() {
             {/* Bird Information Section */}
             <div className="md:col-span-1">
               <h2 className="text-xl font-semibold text-purple mb-4">
-                Bird's Information
+                Species Information
               </h2>
               <div className="space-y-3">
                 <p>

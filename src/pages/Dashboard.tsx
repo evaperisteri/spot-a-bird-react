@@ -39,9 +39,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const showMyLogsParam = searchParams.get("showMyLogs");
-    if (showMyLogsParam === "true") {
-      setShowOnlyMyLogs(true);
-    }
+    setShowOnlyMyLogs(showMyLogsParam === "true");
   }, [searchParams]);
 
   // Fetch all logs on mount

@@ -30,7 +30,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 shadow-edge border-b border-lilac/60 p-2 h-16 lg:h-20 bg-offwhite/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 shadow-edge border-b border-lilac/60 p-2 h-16 lg:h-20 bg-offwhite/80 backdrop-blur-sm">
       <nav className="flex justify-between items-center max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         <Link
           to={isAuthenticated ? "/dashboard" : "/"}
