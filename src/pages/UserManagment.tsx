@@ -311,8 +311,8 @@ const UserManagement = () => {
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-sans ${
                               user.isActive
-                                ? "bg-green-100 text-green-400"
-                                : "bg-rose-100 text-rose-400"
+                                ? "bg-sage/20 text-sage"
+                                : "bg-purple/20 text-purple"
                             }`}
                           >
                             {user.isActive ? "Active" : "Inactive"}
@@ -324,7 +324,7 @@ const UserManagement = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-purple hover:bg-lilac/20"
+                            className="text-purple hover:bg-purple/20"
                             onClick={() => handleEdit(user)}
                             title="Edit"
                           >
@@ -333,7 +333,7 @@ const UserManagement = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-rose-600 hover:bg-rose-100"
+                            className="text-purple hover:bg-purple/20"
                             onClick={() => handleDelete(user.id)}
                             title="Delete"
                           >
@@ -367,7 +367,7 @@ const UserManagement = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-purple hover:bg-lilac/20 p-1 h-8 w-8"
+                        className="text-purple hover:bg-purple/20 p-1 h-8 w-8"
                         onClick={() => handleEdit(user)}
                         title="Edit"
                       >
@@ -376,7 +376,7 @@ const UserManagement = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-rose-400 hover:bg-rose-100 p-1 h-8 w-8"
+                        className="text-purple hover:bg-purple/20 p-1 h-8 w-8"
                         onClick={() => handleDelete(user.id)}
                         title="Delete"
                       >
@@ -415,8 +415,8 @@ const UserManagement = () => {
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-sans ${
                         user.isActive
-                          ? "bg-green-100 text-green-400"
-                          : "bg-rose-100 text-rose-400"
+                          ? "bg-sage/20 text-sage"
+                          : "bg-lilac/20 text-purple"
                       }`}
                     >
                       {user.isActive ? "Active" : "Inactive"}
