@@ -38,6 +38,7 @@ export interface UserUpdateDTO {
   firstname: string;
   lastname: string;
   email: string;
+  isActive?: boolean;
   dateOfBirth?: string;
   gender?: Gender | "";
 }
