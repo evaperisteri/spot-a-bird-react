@@ -6,8 +6,7 @@ import { Button } from "../components/ui/button.tsx";
 import { Label } from "../components/ui/label.tsx";
 import { useAuth } from "../hooks/useAuth.ts";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const { loginUser } = useAuth();
@@ -22,73 +21,76 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFields) => {
-    console.log("Form submitted with:", data);
     try {
-      console.log("Attempting login...");
       await loginUser(data);
-      console.log("Login successful, navigating...", data);
       toast.success("Login successful!");
       navigate("/dashboard");
     } catch (err) {
-      console.error("Login error:", err);
       toast.error(err instanceof Error ? err.message : "Login failed...");
     }
   };
 
   return (
-    <>
-      <div className="items-center justify-center sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center min-h-[60vh] py-8">
+      <div className="w-full max-w-md mx-4">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="max-w-sm mx-auto p-8 space-y-4 border-2 border-eggshell/30 roundedmy-12  bg-offwhite/80 "
+          className="p-6 space-y-4 border-2 border-eggshell/30 rounded-lg bg-offwhite/80 shadow-lg"
         >
-          <h1 className="text-purple text-xl">Already a spotter?</h1>
+          <h1 className="text-2xl font-logo font-bold text-purple text-center">
+            Already a spotter?
+          </h1>
+
           <div>
-            <Label htmlFor="username" className="mb-1">
+            <Label htmlFor="username" className="block mb-2">
               Username
             </Label>
             <Input
-              className=" hover:border-eggshell"
+              className="w-full hover:border-eggshell"
               id="username"
               autoFocus
               {...register("username")}
               disabled={isSubmitting}
             />
             {errors.username && (
-              <div className="text-rose-800">{errors.username.message}</div>
+              <div className="text-rose-800 text-sm mt-1">
+                {errors.username.message}
+              </div>
             )}
           </div>
 
           <div>
-            <Label htmlFor="password" className="mb-1">
+            <Label htmlFor="password" className="block mb-2">
               Password
             </Label>
             <Input
               id="password"
               type="password"
-              className=" hover:border-eggshell"
+              className="w-full hover:border-eggshell"
               {...register("password")}
               disabled={isSubmitting}
             />
             {errors.password && (
-              <div className="text-rose-800">{errors.password.message}</div>
+              <div className="text-rose-800 text-sm mt-1">
+                {errors.password.message}
+              </div>
             )}
           </div>
 
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Logging ..." : "Login"}
-            </Button>
-          </div>
-          <p className="text-center">OR</p>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Button>
+
+          <p className="text-center text-gray-600">OR</p>
+
           <Link
-            className="text-purple font-sans hover:text-purple/70 border border-purple hover:border-eggshell rounded-md p-2 shadow-soft block text-center"
+            className="block text-center text-purple font-sans hover:text-purple/70 border border-purple hover:border-eggshell rounded-md py-2 shadow-soft transition-colors"
             to="/users/register"
           >
             Register here
           </Link>
         </form>
       </div>
-    </>
+    </div>
   );
 }

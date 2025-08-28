@@ -18,7 +18,6 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { authFetch } from "../api/client";
 
-// Define the response type for paginated users
 interface PaginatedUserResponse {
   data: UserReadOnlyDTO[];
   totalPages: number;
@@ -46,7 +45,6 @@ const UserManagement = () => {
     try {
       setLoading(true);
 
-      // Prepare filters according to your backend
       const apiFilters: UserFilters = {
         username: filters.username || undefined,
         email: filters.email || undefined,
@@ -108,12 +106,9 @@ const UserManagement = () => {
   };
 
   const handleDelete = async (id: number): Promise<void> => {
-    // Use window.confirm for simplicity instead of Sonner toast
     if (!window.confirm("Are you sure you want to delete this user?")) {
       return;
     }
-
-    const toastId = toast.loading("Deleting user...");
 
     try {
       const response = await authFetch(`/api/users/${id}`, {
@@ -125,14 +120,11 @@ const UserManagement = () => {
         throw new Error(errorData.message || "Failed to delete user");
       }
 
-      toast.success("User deleted successfully", { id: toastId });
-
-      // Refresh the user list
       fetchUsers();
     } catch (err: unknown) {
       toast.error(
         err instanceof Error ? err.message : "Failed to delete user",
-        { id: toastId }
+        {}
       );
       console.error("Delete error:", err);
     }
@@ -315,15 +307,17 @@ const UserManagement = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-sans ${
-                            user.isActive
-                              ? "bg-green-100 text-green-800"
-                              : "bg-rose-100 text-rose-800"
-                          }`}
-                        >
-                          {user.isActive ? "Active" : "Inactive"}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-sans ${
+                              user.isActive
+                                ? "bg-green-100 text-green-400"
+                                : "bg-rose-100 text-rose-400"
+                            }`}
+                          >
+                            {user.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex space-x-2">
@@ -421,8 +415,8 @@ const UserManagement = () => {
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-sans ${
                         user.isActive
-                          ? "bg-green-100 text-green-800"
-                          : "bg-rose-100 text-rose-800"
+                          ? "bg-green-100 text-green-400"
+                          : "bg-rose-100 text-rose-400"
                       }`}
                     >
                       {user.isActive ? "Active" : "Inactive"}

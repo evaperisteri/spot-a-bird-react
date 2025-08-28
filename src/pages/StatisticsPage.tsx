@@ -167,11 +167,11 @@ export default function StatisticsPage() {
             <div className="mt-6 bg-white rounded-lg p-4 shadow-md">
               <h3 className="font-semibold text-purple mb-4 flex items-center">
                 <BarChart3 className="w-5 h-5 mr-2" />
-                My Statistics
+                Log Statistics
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
-                  <h4 className="text-purple/70">My Logs</h4>
+                  <h4 className="text-purple/70">Logs Saved</h4>
                   <p className="text-xl font-bold text-sage">
                     {userStats.totalLogs}
                   </p>

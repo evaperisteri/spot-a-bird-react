@@ -17,6 +17,7 @@ const userUpdateSchema = z.object({
   email: z.string().email("Invalid email address"),
   firstname: z.string().min(1, "First name is required"),
   lastname: z.string().min(1, "Last name is required"),
+  isActive: z.boolean().optional(),
   dateOfBirth: z.string().optional().or(z.literal("")),
   gender: z
     .enum(["MALE", "FEMALE", "NON-BINARY", "GENDERFLUID", "OTHER"])
@@ -58,6 +59,7 @@ const EditUserPage = () => {
         setValue("firstname", userData.firstname);
         setValue("lastname", userData.lastname);
         setValue("role", userData.role);
+        setValue("isActive", userData.isActive ?? true);
         setValue("dateOfBirth", userData.profileDetails?.dateOfBirth || "");
         setValue("gender", userData.profileDetails?.gender || "OTHER");
       } catch (err: unknown) {
@@ -76,14 +78,13 @@ const EditUserPage = () => {
     const toastId = toast.loading("Updating user...");
 
     try {
-      // Check if the API supports role updates
-      // If not, remove role from the updateData
       const updateData: UserUpdateDTO = {
         firstname: data.firstname,
         lastname: data.lastname,
         email: data.email,
         dateOfBirth: data.dateOfBirth || undefined,
         gender: data.gender || undefined,
+        isActive: data.isActive,
         // role: data.role,
       };
 
@@ -264,6 +265,24 @@ const EditUserPage = () => {
               <option value="SPOTTER">Spotter</option>
               <option value="ADMIN">Admin</option>
             </select>
+          </div>
+
+          <div>
+            <Label htmlFor="isActive" className="text-purple font-sans">
+              Account Status
+            </Label>
+            <div className="flex items-center gap-2">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  {...register("isActive")}
+                  defaultChecked={user?.isActive}
+                />
+                <span className="slider"></span>
+              </label>
+              <span>{user?.isActive ? "Active" : "Inactive"}</span>
+            </div>
           </div>
         </div>
 

@@ -40,12 +40,12 @@ const HomePage = () => {
       <div className="p-6">
         <img
           src="/images/Chat5.png"
-          className="h-60 w-60 shadow-heavy rounded-full border-2 border-lilac/80 hover-glow "
+          className="h-40 w-40 md:h-60 md:w-60 shadow-heavy rounded-full border-2 border-lilac/80 hover-glow "
           alt="Logo"
         />
       </div>
       <p className="text-lg md:text-xl text-sage font-sans mb-8 text-center mx-auto ">
-        Spot and log bird sightings in Greece.
+        Spot and log bird species in Greece.
       </p>
 
       <div className="text-center mx-auto">
