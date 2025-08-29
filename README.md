@@ -38,4 +38,5 @@ The frontend communicates with the Spring Boot backend.
 [Spot-a-Bird Backend Repository](https://github.com/evaperisteri/spot-a-bird-app)
 
 **Welcome Screen**
+
 <img src="docs/img2.png" alt="welcome screen" width="400"/>
