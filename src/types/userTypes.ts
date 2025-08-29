@@ -1,5 +1,10 @@
 export type Role = "ADMIN" | "SPOTTER";
-export type Gender = "FEMALE" | "MALE" | "NON-BINARY" | "GENDERFLUID" | "OTHER";
+export type Gender =
+  | "FEMALE"
+  | "MALE"
+  | "NON_BINARY"
+  | "GENDER_FLUID"
+  | "OTHER";
 
 export interface ProfileDetailsDTO {
   dateOfBirth?: string;
@@ -35,6 +40,7 @@ export interface UserInsertDTO {
   profileDetailsInsertDTO?: ProfileDetailsInsertDTO;
 }
 export interface UserUpdateDTO {
+  userId?: number;
   firstname: string;
   lastname: string;
   email: string;

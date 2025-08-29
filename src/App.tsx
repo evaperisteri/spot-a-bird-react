@@ -17,7 +17,8 @@ import BirdsCatalogPage from "./pages/BirdsCatalogPage";
 import BirdDetails from "./pages/BirdDetails";
 import UserManagement from "./pages/UserManagment";
 import ErrorBoundary from "./components/ErrorBoundary";
-import EditUserPage from "./pages/EditUserPAge";
+import EditUserPage from "./pages/EditUserPage";
+import { Toaster } from "sonner";
 
 export default function App() {
   return (
@@ -58,6 +59,23 @@ export default function App() {
           </Route>
         </Routes>
       </AuthProvider>
+      <Toaster
+        position="top-right"
+        expand={true}
+        richColors // Don't set to false
+        closeButton
+        toastOptions={{
+          className: "rounded-2xl shadow-md font-sans",
+          classNames: {
+            toast:
+              "group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+            success: "bg-sage text-offwhite border-0",
+            error: "bg-rose-200 text-purple border border-rose-400",
+            info: "bg-lilac text-purple border-0",
+            warning: "bg-eggshell text-purple border-0",
+          },
+        }}
+      />
     </BrowserRouter>
   );
 }

@@ -18,7 +18,7 @@ export const getUserProfile = async (userId: number): Promise<UserProfile> => {
 export const updateUserProfile = async (
   data: UserUpdateDTO
 ): Promise<UserReadOnlyDTO> => {
-  const response = await authFetch(`/api/users/update-user`, {
+  const response = await authFetch(`/api/users/${data.userId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

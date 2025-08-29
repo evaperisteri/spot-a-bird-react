@@ -20,7 +20,7 @@ const userUpdateSchema = z.object({
   isActive: z.boolean().optional(),
   dateOfBirth: z.string().optional().or(z.literal("")),
   gender: z
-    .enum(["MALE", "FEMALE", "NON-BINARY", "GENDERFLUID", "OTHER"])
+    .enum(["MALE", "FEMALE", "NON_BINARY", "GENDER_FLUID", "OTHER"])
     .optional(),
   role: z.enum(["ADMIN", "SPOTTER"]),
 });
@@ -87,7 +87,7 @@ const EditUserPage = () => {
         isActive: data.isActive,
         // role: data.role,
       };
-
+      console.log("Sending update data:", updateData);
       const response = await authFetch(`/api/users/${id}`, {
         method: "PUT",
         headers: {
@@ -97,13 +97,31 @@ const EditUserPage = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to update user");
+        // Get detailed error message from server
+        let errorMessage = "Failed to update user";
+
+        try {
+          const errorData = await response.json();
+          console.log("Server error response:", errorData); // Debug log
+          errorMessage = errorData.message || errorData.detail || errorMessage;
+
+          // Check for validation errors
+          if (errorData.errors) {
+            errorMessage = Object.entries(errorData.errors)
+              .map(([field, error]) => `${field}: ${error}`)
+              .join(", ");
+          }
+        } catch {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+
+        throw new Error(errorMessage);
       }
 
       toast.success("User updated successfully", { id: toastId });
       navigate("/users");
     } catch (err: unknown) {
+      console.error("Update error:", err);
       toast.error(err instanceof Error ? err.message : "Operation failed", {
         id: toastId,
       });
@@ -246,8 +264,8 @@ const EditUserPage = () => {
               <option value="OTHER">Select</option>
               <option value="MALE">Male</option>
               <option value="FEMALE">Female</option>
-              <option value="NON-BINARY">Non-binary</option>
-              <option value="GENDERFLUID">Genderfluid</option>
+              <option value="NON_BINARY">Non-binary</option>
+              <option value="GENDER_FLUID">Genderfluid</option>
               <option value="OTHER">Other</option>
             </select>
           </div>

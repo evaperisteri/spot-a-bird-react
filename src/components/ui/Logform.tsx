@@ -6,6 +6,7 @@ import { regionsService, Region } from "../../api/regions";
 import LoadingSpinner from "./LoadingSpinner";
 import { BirdSearchComboBox } from "./BirdSearchComboBox";
 import { ChevronsUpDownIcon } from "lucide-react";
+import { toast } from "sonner";
 
 interface FormData {
   birdName: string;
@@ -35,7 +36,7 @@ export default function Logform({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  //const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     birdName: initialData?.birdName || "",
@@ -50,7 +51,7 @@ export default function Logform({
     const fetchInitialData = async () => {
       try {
         setFetchingData(true);
-        setError(null);
+        //setError(null);
 
         const regionsData = await regionsService.getAllRegions();
         const safeRegionsData = Array.isArray(regionsData) ? regionsData : [];
@@ -67,7 +68,8 @@ export default function Logform({
         }
       } catch (error: unknown) {
         console.error("Error fetching data:", error);
-        setError("Failed to load form data. Please try again.");
+        //setError("Failed to load form data. Please try again.");
+        toast.error("Failed to load form data. Please try again.");
       } finally {
         setFetchingData(false);
       }
@@ -90,10 +92,11 @@ export default function Logform({
     e.preventDefault();
 
     setLoading(true);
-    setError(null);
+    //setError(null);
 
     if (!selectedBird || !formData.regionName) {
-      setError("Please select both a bird species and a region");
+      toast.error("Please select both a bird species and a region");
+      //setError("Please select both a bird species and a region");
       setLoading(false);
       return;
     }
@@ -107,10 +110,12 @@ export default function Logform({
 
       if (onSubmit) {
         onSubmit(logData);
+        toast.success("Log uploaded successfully!");
         return;
       }
 
       await birdwatchinglogs.createLog(logData);
+      toast.success("Log created successfully!");
       navigate("/dashboard", {
         state: { message: "Log created successfully!" },
       });
@@ -120,7 +125,8 @@ export default function Logform({
         err instanceof Error
           ? err.message
           : "Failed to save log. Please try again.";
-      setError(errorMessage);
+      //setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -133,23 +139,16 @@ export default function Logform({
       </div>
     );
   }
+  if (fetchingData) {
+    return (
+      <div className="min-h-screen bg-[url('/img/ssspot.svg')] bg-cover bg-center flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
-      {error && (
-        <div className="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded mb-4 mx-2 md:mx-4 lg:mx-0">
-          <div className="flex justify-between items-center">
-            <span className="text-sm md:text-base">{error}</span>
-            <button
-              onClick={() => setError(null)}
-              className="text-rose-800 hover:text-rose-900 font-bold text-lg"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-
       <form
         onSubmit={handleSubmit}
         className="space-y-4 md:space-y-6 px-2 md:px-4 lg:px-6"

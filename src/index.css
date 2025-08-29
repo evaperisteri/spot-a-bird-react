@@ -203,3 +203,32 @@ select:focus {
 .hover-glow:hover {
   filter: drop-shadow(0 0 8px rgba(123, 143, 110, 0.6));
 }
+
+/* Global CSS for toast styling */
+[data-sonner-toaster] [data-sonner-toast] {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  font-family: sans-serif !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-color: #517c57;
+  background-color: #87b38d !important; /* sage */
+  color: #f8f9fa !important; /* offwhite */
+}
+
+[data-sonner-toast][data-type="error"] {
+  background-color: #d8b3b3 !important; /* rose-200 */
+  color: #5a4060 !important; /* purple */
+  border: 1px solid #a85757 !important; /* rose-400 */
+}
+
+[data-sonner-toast][data-type="info"] {
+  background-color: #d6d6f5 !important; /* lilac */
+  color: #f8f9fa !important; /* purple */
+}
+
+[data-sonner-toast][data-type="warning"] {
+  background-color: #f0ead6 !important; /* eggshell */
+  color: #f8f9fa !important; /* purple */
+}

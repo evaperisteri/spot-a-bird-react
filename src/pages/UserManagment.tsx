@@ -116,17 +116,31 @@ const UserManagement = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to delete user");
+        // Try to get detailed error message
+        let errorDetail = `HTTP error! status: ${response.status}`;
+
+        try {
+          const errorData = await response.json();
+          errorDetail =
+            errorData.message || errorData.detail || JSON.stringify(errorData);
+        } catch {
+          // If no JSON response, use status text
+          errorDetail = response.statusText || errorDetail;
+        }
+
+        throw new Error(errorDetail);
       }
 
+      toast.success("User deleted successfully");
       fetchUsers();
     } catch (err: unknown) {
+      console.error("Delete error details:", err);
       toast.error(
-        err instanceof Error ? err.message : "Failed to delete user",
-        {}
+        err instanceof Error
+          ? "You can not delete a user with saved logs. Try deactivation! " +
+              err.message
+          : "You can not delete a user with saved logs. Try deactivation!"
       );
-      console.error("Delete error:", err);
     }
   };
 
@@ -208,7 +222,6 @@ const UserManagement = () => {
               className="w-full px-3 py-2 text-sm rounded-lg border-2 border-lilac hover:border-sage/50 focus:ring-2 focus:ring-purple focus:outline-none text-purple bg-offwhite font-sans"
             >
               <option value="">All Roles</option>
-              <option value="USER">User</option>
               <option value="ADMIN">Admin</option>
               <option value="SPOTTER">Spotter</option>
             </select>
