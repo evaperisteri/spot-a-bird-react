@@ -39,4 +39,4 @@ The frontend communicates with the Spring Boot backend.
 
 **Welcome Screen**
 
-![welcome screen](assets/img2.png)
+![welcome screen](screenshots/img2.png)
