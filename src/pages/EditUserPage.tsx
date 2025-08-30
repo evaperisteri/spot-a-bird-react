@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserUpdateDTO, UserReadOnlyDTO } from "../types/userTypes";
 import { authFetch } from "../api/client";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { Switch } from "../components/ui/switch";
 import { ArrowLeft, Save } from "lucide-react";
 import { z } from "zod";
 
@@ -38,6 +39,8 @@ const EditUserPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
+    control,
+    watch,
   } = useForm<UserUpdateFields>({
     resolver: zodResolver(userUpdateSchema),
   });
@@ -286,21 +289,26 @@ const EditUserPage = () => {
           </div>
 
           <div>
-            <Label htmlFor="isActive" className="text-purple font-sans">
-              Account Status
-            </Label>
-            <div className="flex items-center gap-2">
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
+            <Controller
+              name="isActive"
+              control={control}
+              render={({ field }) => (
+                <Switch
                   id="isActive"
-                  {...register("isActive")}
-                  defaultChecked={user?.isActive}
+                  checked={field.value ?? false}
+                  onCheckedChange={field.onChange}
+                  disabled={isSubmitting}
+                  className={`${
+                    field.value
+                      ? "data-[state=checked]:bg-sage"
+                      : "data-[state=unchecked]:bg-purple"
+                  }`}
                 />
-                <span className="slider"></span>
-              </label>
-              <span>{user?.isActive ? "Active" : "Inactive"}</span>
-            </div>
+              )}
+            />
+            <span className="text-purple font-sans m-1 ">
+              {watch("isActive") ? "Active" : "Inactive"}
+            </span>
           </div>
         </div>
 
