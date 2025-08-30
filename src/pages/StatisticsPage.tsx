@@ -137,7 +137,7 @@ export default function StatisticsPage() {
   return (
     <>
       <div className="container mx-auto p-4">
-        <h1 className="text-center sm:text-start text-3xl tracking-widest font-logo text-purple mx-4 mb-6">
+        <h1 className="text-center sm:text-start text-3xl tracking-wider font-logo text-purple mx-4 mb-6">
           Statistics
         </h1>
 
