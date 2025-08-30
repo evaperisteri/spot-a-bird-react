@@ -5,9 +5,10 @@ import type {
   BirdwatchingLogTableItem,
   BirdwatchingLogReadOnlyDTO,
 } from "../types/birdwatchingTypes";
-import { Search, User } from "lucide-react";
+import { Search } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useSearchParams } from "react-router-dom";
+import { Switch } from "../components/ui/switch";
 
 // Mapping function for API responses that return BirdwatchingLogReadOnlyDTO
 const mapLogDTOtoTableItem = (
@@ -235,22 +236,20 @@ export default function Dashboard() {
         {/* Toggle My Logs Button */}
         <div className="mb-6 flex justify-between items-center w-full max-w-4xl ">
           <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleMyLogs}
-              disabled={!isAuthenticated} // Disable if user not logged in
-              className={`px-4 py-2 rounded-lg font-sans font-semibold transition duration-200 shadow-md flex items-center gap-2 ${
-                showOnlyMyLogs
-                  ? "bg-sage text-offwhite hover:bg-sage/80"
-                  : "bg-lilac/40 text-purple hover:bg-lilac/60"
-              } ${!isAuthenticated ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              <User className="w-4 h-4" />
-              {showOnlyMyLogs ? "Show All Logs" : "Show My Logs"}
-            </button>
+            <Switch
+              id="showMyLogs"
+              checked={showOnlyMyLogs}
+              onCheckedChange={toggleMyLogs}
+              disabled={!isAuthenticated}
+              className="data-[state=checked]:bg-sage data-[state=unchecked]:bg-lilac/50"
+            />
+            <span className="text-purple font-sans ml-2">
+              {showOnlyMyLogs ? "My logs" : "All logs"}
+            </span>
 
             {showOnlyMyLogs && (
               <span className="text-purple/70 font-sans">
-                Showing only your logs ({myLogs.length})
+                Found ({myLogs.length})
               </span>
             )}
           </div>

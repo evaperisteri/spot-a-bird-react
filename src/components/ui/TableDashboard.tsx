@@ -217,7 +217,7 @@ export default function TableDashboard({
         <p className="text-purple/70 mb-4">"No birdwatching logs yet</p>
 
         <Link
-          to="/newlog"
+          to="/savelog"
           className="bg-sage text-offwhite px-4 py-2 rounded-md hover:bg-sage/80 transition-colors inline-block"
         >
           Create Your First Log
